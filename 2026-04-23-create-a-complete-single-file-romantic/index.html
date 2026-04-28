@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy 5 Months ❤️</title>
+  <style>
+    :root {
+      --bg-1: #fff8fb;
+      --bg-2: #ffdce8;
+      --bg-3: #ffc6da;
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-strong: rgba(255, 255, 255, 0.88);
+      --border: rgba(255, 255, 255, 0.7);
+      --text: #6e3a51;
+      --text-soft: #a4647c;
+      --accent: #f26b98;
+      --accent-deep: #dd4c81;
+      --accent-pale: #ffeaf1;
+      --success: #ff8fb3;
+      --shadow: 0 20px 60px rgba(194, 112, 143, 0.18);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --transition: 260ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Poppins, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(255, 236, 243, 0.9), transparent 30%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.32);
+      filter: blur(12px);
+      z-index: 0;
+      animation: driftGlow 10s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    body::before {
+      top: 6%;
+      right: -90px;
+    }
+
+    body::after {
+      bottom: 8%;
+      left: -90px;
+      animation-duration: 13s;
+    }
+
+    .floating-hearts {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -40px;
+      width: 18px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.55);
+      transform: rotate(45deg);
+      animation: floatHeart linear infinite;
+      opacity: 0.55;
+      filter: blur(0.2px);
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: inherit;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      left: -9px;
+    }
+
+    .heart::after {
+      top: -9px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 18px;
+    }
+
+    .shell {
+      width: min(100%, 980px);
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+      transition: opacity 420ms ease, transform 420ms ease;
+    }
+
+    .screen.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      animation: fadeInUp 620ms ease;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.45), transparent 45%, rgba(255, 228, 236, 0.35));
+      pointer-events: none;
+    }
+
+    .welcome-layout,
+    .result-layout {
+      display: grid;
+      gap: 22px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 26px 18px 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 999px;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 18px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+    }
+
+    h1, h2 {
+      margin: 0;
+      line-height: 1.05;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 4.5rem);
+    }
+
+    h2 {
+      font-size: clamp(1.65rem, 4vw, 2.6rem);
+    }
+
+    .subtitle,
+    .result-message,
+    .rules-text,
+    .reward-copy {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.7;
+    }
+
+    .subtitle {
+      max-width: 560px;
+      margin: 14px auto 0;
+      font-size: 1.05rem;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), opacity var(--transition);
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-soft {
+      min-width: 148px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      box-shadow: 0 14px 28px rgba(232, 96, 145, 0.28);
+    }
+
+    .btn-secondary {
+      color: var(--accent-deep);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: inset 0 0 0 1px rgba(242, 107, 152, 0.16);
+    }
+
+    .btn-soft {
+      color: var(--text);
+      background: rgba(255, 244, 248, 0.95);
+      box-shadow: inset 0 0 0 1px rgba(255, 210, 225, 0.92);
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0) scale(0.99);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .rules-card,
+    .quiz-card,
+    .result-card {
+      padding: 24px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+      font-weight: 600;
+      color: var(--accent-deep);
+    }
+
+    .quiz-card {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .progress-chip,
+    .score-chip {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--text-soft);
+      font-size: 0.95rem;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
+    }
+
+    .question-box {
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      background: var(--surface-strong);
+      box-shadow: inset 0 0 0 1px rgba(255, 227, 236, 0.9);
+    }
+
+    .question-label {
+      color: var(--accent-deep);
+      font-size: 0.94rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      margin: 0;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      line-height: 1.35;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .option {
+      position: relative;
+      text-align: left;
+      padding: 18px 18px 18px 58px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: inset 0 0 0 1px rgba(247, 198, 217, 0.78);
+      color: var(--text);
+      min-height: 88px;
+      display: flex;
+      align-items: center;
+    }
+
+    .option::before {
+      content: attr(data-letter);
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-deep);
+      background: var(--accent-pale);
+    }
+
+    .option.selected {
+      background: linear-gradient(135deg, rgba(255, 244, 248, 0.98), rgba(255, 228, 236, 0.98));
+      box-shadow:
+        inset 0 0 0 2px rgba(242, 107, 152, 0.58),
+        0 12px 24px rgba(227, 135, 171, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .option.hidden-by-lifeline {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .quiz-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .quiz-note {
+      margin-top: 14px;
+      min-height: 24px;
+      color: var(--text-soft);
+      font-size: 0.94rem;
+    }
+
+    .result-layout {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .score-display {
+      font-size: clamp(2.1rem, 5vw, 3.4rem);
+      font-weight: 700;
+      color: var(--accent-deep);
+      margin: 8px 0 10px;
+    }
+
+    .reward-box,
+    .image-frame {
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: inset 0 0 0 1px rgba(247, 211, 223, 0.9);
+    }
+
+    .reward-box {
+      padding: 20px;
+    }
+
+    .image-frame {
+      position: relative;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .memory-photo {
+      display: block;
+      width: 100%;
+      border-radius: calc(var(--radius-lg) - 6px);
+      object-fit: cover;
+      box-shadow: 0 20px 40px rgba(215, 126, 158, 0.2);
+    }
+
+    .photo-caption {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.42);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 10px 26px rgba(90, 40, 61, 0.16);
+      color: #ffffff;
+      font-size: clamp(0.95rem, 2vw, 1.18rem);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 10px rgba(73, 27, 46, 0.55);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .signature {
+      text-align: center;
+      color: var(--text-soft);
+      font-size: 0.96rem;
+      margin-top: 4px;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes driftGlow {
+      from {
+        transform: translateY(0) scale(1);
+      }
+      to {
+        transform: translateY(20px) scale(1.1);
+      }
+    }
+
+    @keyframes floatHeart {
+      0% {
+        transform: translateY(0) rotate(45deg) scale(0.9);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.55;
+      }
+      100% {
+        transform: translateY(-112vh) rotate(45deg) scale(1.15);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .card,
+      .quiz-card,
+      .result-card,
+      .rules-card {
+        padding: 20px;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-actions {
+        justify-content: center;
+      }
+
+      .btn-primary,
+      .btn-secondary,
+      .btn-soft {
+        width: 100%;
+      }
+
+      .quiz-header {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-hearts" id="floatingHearts" aria-hidden="true"></div>
+
+  <main class="page">
+    <div class="shell">
+      <section class="screen active" id="welcomeScreen">
+        <div class="welcome-layout">
+          <div class="card hero">
+            <div class="eyebrow">A little game made with love</div>
+            <h1>Happy 5 Months ❤️</h1>
+            <p class="subtitle">Five months of smiles, soft moments, and a hundred tiny memories I never want to stop collecting with you.</p>
+            <div class="btn-row">
+              <button class="btn-primary" id="startBtn">Start Game</button>
+            </div>
+          </div>
+
+          <div class="card rules-card">
+            <p class="section-title">Rules &amp; Rewards</p>
+            <p class="rules-text">
+              1. The 50/50 lifeline can be used just once - so use it wisely.<br />
+              2. Total number of questions is 10.<br />
+              3. There's only one correct answer for each.<br /><br />
+              Rewards:<br />
+              10/10 - Ice cream + Massage + Butler for the entire day (I'll do anything you want basically) + I love you more for 4 days + I'll show you my proper dance skills<br />
+              9/10 - Ice Cream + Massage + Butler for the entire day + I love you more for 4 days<br />
+              8/10 - Ice Cream + Massage + Butler for the entire day<br />
+              7/10 - Ice Cream + Massage<br />
+              6/10 - Ice Cream<br />
+              &lt;6/10 - I don't think you love me😢
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="quizScreen">
+        <div class="card quiz-card">
+          <div class="quiz-header">
+            <div class="progress-chip" id="progressText">Question 1/10</div>
+            <div class="score-chip" id="liveScore">Score: 0</div>
+            <div class="score-chip" id="lifelineStatus">50/50 Lifeline Available</div>
+          </div>
+
+          <div class="question-box">
+            <div class="question-label">For us, for real</div>
+            <h2 class="question-text" id="questionText"></h2>
+            <div class="options" id="optionsContainer"></div>
+          </div>
+
+          <div class="quiz-note" id="quizNote">Pick the answer that feels like our memory.</div>
+
+          <div class="quiz-actions">
+            <button class="btn-secondary" id="lifelineBtn">Use 50/50</button>
+            <button class="btn-primary" id="nextBtn">Next</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="resultScreen">
+        <div class="result-layout">
+          <div class="card result-card hero">
+            <div class="eyebrow">You reached the end</div>
+            <h2>Our Little Love Quiz</h2>
+            <div class="score-display" id="finalScore">You got 0/10 💕</div>
+            <p class="result-message" id="resultMessage">
+              No matter the score, every memory with you already feels like my favorite answer.
+            </p>
+          </div>
+
+          <div class="card reward-box">
+            <p class="section-title">Your Reward</p>
+            <p class="reward-copy" id="rewardText">
+              Reward placeholder. You can edit this logic later to match each score with your own special surprise.
+            </p>
+          </div>
+
+          <div class="card image-frame">
+            <img
+              class="memory-photo"
+              src="./romantic-photo.png"
+              alt="A collage of sweet moments together"
+            />
+            <div class="photo-caption">Us forever</div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" id="playAgainBtn">Play Again</button>
+          </div>
+
+          <p class="signature">Made for a story that keeps getting softer and sweeter.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const quizData = [
+      {
+        question: "What was the first text I ever sent you?",
+        options: [
+          "Hey, it's Vivaan, Want to meet up at 6",
+          "Vivaan here, you free for coffee at 6?",
+          "Hi, got your number from Gireesha, you wanna grab coffee at 6?",
+          "Hey, Vivaan Jain here, you wanna grab coffee around 6?"
+        ],
+        answer: 3
+      },
+      {
+        question: "What was I wearing when we first met?",
+        options: [
+          "blue sweatshirt and black tracks",
+          "white t-shirt and grey joggers",
+          "blue t-shirt and shorts",
+          "blue sweatshirt and shorts"
+        ],
+        answer: 3
+      },
+      {
+        question: "Where did we first meet?",
+        options: [
+          "blue tokai",
+          "rh2",
+          "rh4",
+          "Chai24"
+        ],
+        answer: 3
+      },
+      {
+        question: "What was the first meal we ever had together?",
+        options: [
+          "Healthy nook",
+          "Dhaba",
+          "mess",
+          "blue tokai"
+        ],
+        answer: 3
+      },
+      {
+        question: "What was the first type of flowers I ever got you?",
+        options: [
+          "white lilies",
+          "blue roses",
+          "white roses",
+          "Carnations"
+        ],
+        answer: 3
+      },
+      {
+        question: "Where did we meet the morning after we made out?",
+        options: [
+          "inside blue tokai",
+          "outside fuel zone",
+          "rh2 commons",
+          "outside blue tokai"
+        ],
+        answer: 3
+      },
+      {
+        question: "What was the first thing we ever watched together?",
+        options: [
+          "how I met your mother",
+          "Brooklyn 99",
+          "Modern family",
+          "10 things I hate about you"
+        ],
+        answer: 3
+      },
+      {
+        question: "When did we first say I love you to each other?",
+        options: [
+          "20th December",
+          "21st December",
+          "19th December",
+          "22nd December"
+        ],
+        answer: 3
+      },
+      {
+        question: "Where did we eat on Valentines?",
+        options: [
+          "The Grammar Room",
+          "Big Chill",
+          "Trick question",
+          "Yum Yum Cha"
+        ],
+        answer: 2
+      },
+      {
+        question: "What is the most recent movie we finished?",
+        options: [
+          "Kal ho na ho",
+          "The princess Switch",
+          "She’s the man",
+          "Kabhi Alvida na Kehna"
+        ],
+        answer: 2
+      }
+    ];
+
+    const screens = {
+      welcome: document.getElementById("welcomeScreen"),
+      quiz: document.getElementById("quizScreen"),
+      result: document.getElementById("resultScreen")
+    };
+
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const lifelineBtn = document.getElementById("lifelineBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+    const questionText = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const progressText = document.getElementById("progressText");
+    const liveScore = document.getElementById("liveScore");
+    const lifelineStatus = document.getElementById("lifelineStatus");
+    const quizNote = document.getElementById("quizNote");
+    const finalScore = document.getElementById("finalScore");
+    const resultMessage = document.getElementById("resultMessage");
+    const rewardText = document.getElementById("rewardText");
+    const heartsContainer = document.getElementById("floatingHearts");
+
+    let currentQuestion = 0;
+    let selectedAnswers = [];
+    let selectedOption = null;
+    let lifelineUsed = false;
+    let hiddenOptions = [];
+
+    function setActiveScreen(screenName) {
+      Object.values(screens).forEach((screen) => screen.classList.remove("active"));
+      screens[screenName].classList.add("active");
+    }
+
+    function createHearts() {
+      const totalHearts = 18;
+      heartsContainer.innerHTML = "";
+
+      for (let i = 0; i < totalHearts; i += 1) {
+        const heart = document.createElement("span");
+        heart.className = "heart";
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.animationDuration = `${8 + Math.random() * 7}s`;
+        heart.style.animationDelay = `${Math.random() * 8}s`;
+        heart.style.opacity = `${0.25 + Math.random() * 0.35}`;
+        const size = 12 + Math.random() * 16;
+        heart.style.width = `${size}px`;
+        heart.style.height = `${size}px`;
+        heart.style.background = Math.random() > 0.5 ? "rgba(255,255,255,0.55)" : "rgba(255,221,233,0.65)";
+        heartsContainer.appendChild(heart);
+      }
+    }
+
+    function renderQuestion() {
+      const item = quizData[currentQuestion];
+      const optionLetters = ["A", "B", "C", "D"];
+
+      progressText.textContent = `Question ${currentQuestion + 1}/${quizData.length}`;
+      liveScore.textContent = `Score: ${calculateScore()}`;
+      lifelineStatus.textContent = lifelineUsed ? "50/50 Lifeline Used" : "50/50 Lifeline Available";
+      questionText.textContent = item.question;
+      optionsContainer.innerHTML = "";
+      quizNote.textContent = "Pick the answer that feels like our memory.";
+      selectedOption = selectedAnswers[currentQuestion] ?? null;
+
+      item.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.type = "button";
+        button.dataset.index = index;
+        button.dataset.letter = optionLetters[index];
+        button.textContent = option;
+
+        if (selectedOption === index) {
+          button.classList.add("selected");
+        }
+
+        if (hiddenOptions.includes(index)) {
+          button.classList.add("hidden-by-lifeline");
+        }
+
+        button.addEventListener("click", () => {
+          if (hiddenOptions.includes(index)) {
+            return;
+          }
+
+          selectedOption = index;
+          document.querySelectorAll(".option").forEach((optionButton) => {
+            optionButton.classList.remove("selected");
+          });
+          button.classList.add("selected");
+          quizNote.textContent = "Choice selected. Tap Next to lock it in.";
+        });
+
+        optionsContainer.appendChild(button);
+      });
+
+      nextBtn.textContent = currentQuestion === quizData.length - 1 ? "See Result" : "Next";
+      lifelineBtn.disabled = lifelineUsed;
+    }
+
+    function useLifeline() {
+      if (lifelineUsed) {
+        return;
+      }
+
+      const correctAnswer = quizData[currentQuestion].answer;
+      const incorrectOptions = quizData[currentQuestion].options
+        .map((_, index) => index)
+        .filter((index) => index !== correctAnswer);
+
+      hiddenOptions = incorrectOptions
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 2);
+
+      lifelineUsed = true;
+      quizNote.textContent = "Two wrong answers faded away. Choose carefully.";
+      renderQuestion();
+    }
+
+    function calculateScore() {
+      return selectedAnswers.reduce((score, answer, index) => {
+        return score + (answer === quizData[index].answer ? 1 : 0);
+      }, 0);
+    }
+
+    function getRewardCopy(score) {
+      if (score === 10) {
+        return "Ice cream + Massage + Butler for the entire day (I'll do anything you want basically) + I love you more for 4 days + I'll show you my proper dance skills";
+      }
+      if (score === 9) {
+        return "Ice Cream + Massage + Butler for the entire day + I love you more for 4 days";
+      }
+      if (score === 8) {
+        return "Ice Cream + Massage + Butler for the entire day";
+      }
+      if (score === 7) {
+        return "Ice Cream + Massage";
+      }
+      if (score === 6) {
+        return "Ice Cream";
+      }
+      return "I don't think you love me😢";
+    }
+
+    function getRomanticMessage(score) {
+      if (score === 10) {
+        return "You remembered us perfectly, and honestly that feels exactly right for a love this soft and unforgettable.";
+      }
+      if (score >= 8) {
+        return "You know our story so beautifully. Every answer feels like another little reminder of how special this has been.";
+      }
+      if (score >= 5) {
+        return "Some details can blur, but the feeling never does. What matters most is still us, always.";
+      }
+      return "Even if the quiz was tricky, loving you still feels like the easiest thing in the world.";
+    }
+
+    function showResults() {
+      const score = calculateScore();
+      finalScore.textContent = `You got ${score}/${quizData.length} 💕`;
+      rewardText.textContent = getRewardCopy(score);
+      resultMessage.textContent = getRomanticMessage(score);
+      setActiveScreen("result");
+    }
+
+    function goToNextQuestion() {
+      if (selectedOption === null) {
+        quizNote.textContent = "Choose one option first, pretty please.";
+        return;
+      }
+
+      selectedAnswers[currentQuestion] = selectedOption;
+
+      if (currentQuestion === quizData.length - 1) {
+        showResults();
+        return;
+      }
+
+      currentQuestion += 1;
+      hiddenOptions = [];
+      renderQuestion();
+    }
+
+    function resetGame() {
+      currentQuestion = 0;
+      selectedAnswers = [];
+      selectedOption = null;
+      lifelineUsed = false;
+      hiddenOptions = [];
+      renderQuestion();
+      setActiveScreen("welcome");
+    }
+
+    startBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      selectedAnswers = [];
+      selectedOption = null;
+      hiddenOptions = [];
+      lifelineUsed = false;
+      renderQuestion();
+      setActiveScreen("quiz");
+    });
+
+    lifelineBtn.addEventListener("click", useLifeline);
+    nextBtn.addEventListener("click", goToNextQuestion);
+    playAgainBtn.addEventListener("click", resetGame);
+
+    createHearts();
+  </script>
+</body>
+</html>
