@@ -368,6 +368,36 @@
       transform: translateY(-1px);
     }
 
+    .option.correct {
+      background: linear-gradient(135deg, rgba(226, 255, 234, 0.98), rgba(168, 239, 188, 0.98));
+      box-shadow:
+        inset 0 0 0 2px rgba(42, 166, 88, 0.58),
+        0 12px 24px rgba(65, 166, 101, 0.16);
+      color: #245235;
+    }
+
+    .option.correct::before {
+      color: #245235;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .option.incorrect {
+      background: linear-gradient(135deg, rgba(255, 232, 235, 0.98), rgba(255, 169, 183, 0.98));
+      box-shadow:
+        inset 0 0 0 2px rgba(219, 66, 88, 0.58),
+        0 12px 24px rgba(219, 66, 88, 0.16);
+      color: #7b2633;
+    }
+
+    .option.incorrect::before {
+      color: #7b2633;
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .option:disabled {
+      cursor: default;
+    }
+
     .option.hidden-by-lifeline {
       visibility: hidden;
       pointer-events: none;
@@ -737,6 +767,7 @@
     let currentQuestion = 0;
     let selectedAnswers = [];
     let selectedOption = null;
+    let answerSubmitted = false;
     let lifelineUsed = false;
     let hiddenOptions = [];
 
@@ -774,7 +805,7 @@
       questionText.textContent = item.question;
       optionsContainer.innerHTML = "";
       quizNote.textContent = "Pick the answer that feels like our memory.";
-      selectedOption = selectedAnswers[currentQuestion] ?? null;
+      selectedOption = null;
 
       item.options.forEach((option, index) => {
         const button = document.createElement("button");
@@ -793,7 +824,7 @@
         }
 
         button.addEventListener("click", () => {
-          if (hiddenOptions.includes(index)) {
+          if (answerSubmitted || hiddenOptions.includes(index)) {
             return;
           }
 
@@ -802,14 +833,14 @@
             optionButton.classList.remove("selected");
           });
           button.classList.add("selected");
-          quizNote.textContent = "Choice selected. Tap Next to lock it in.";
+          quizNote.textContent = "Choice selected. Tap Submit to lock it in.";
         });
 
         optionsContainer.appendChild(button);
       });
 
-      nextBtn.textContent = currentQuestion === quizData.length - 1 ? "See Result" : "Next";
-      lifelineBtn.disabled = lifelineUsed;
+      nextBtn.textContent = "Submit";
+      lifelineBtn.disabled = lifelineUsed || answerSubmitted;
     }
 
     function useLifeline() {
@@ -829,6 +860,42 @@
       lifelineUsed = true;
       quizNote.textContent = "Two wrong answers faded away. Choose carefully.";
       renderQuestion();
+    }
+
+    function revealAnswer() {
+      const correctAnswer = quizData[currentQuestion].answer;
+
+      document.querySelectorAll(".option").forEach((optionButton) => {
+        const optionIndex = Number(optionButton.dataset.index);
+        optionButton.disabled = true;
+
+        if (optionIndex === correctAnswer) {
+          optionButton.classList.add("correct");
+        }
+
+        if (optionIndex === selectedOption && optionIndex !== correctAnswer) {
+          optionButton.classList.add("incorrect");
+        }
+      });
+    }
+
+    function submitAnswer() {
+      if (selectedOption === null) {
+        quizNote.textContent = "Choose one option first, pretty please.";
+        return;
+      }
+
+      selectedAnswers[currentQuestion] = selectedOption;
+      answerSubmitted = true;
+      revealAnswer();
+      liveScore.textContent = `Score: ${calculateScore()}`;
+      lifelineBtn.disabled = true;
+      nextBtn.textContent = currentQuestion === quizData.length - 1 ? "See Result" : "Next Question";
+
+      const isCorrect = selectedOption === quizData[currentQuestion].answer;
+      quizNote.textContent = isCorrect
+        ? "Correct answer. Tap Next Question when you're ready."
+        : "Not this one. The green answer is the right memory.";
     }
 
     function calculateScore() {
@@ -878,12 +945,10 @@
     }
 
     function goToNextQuestion() {
-      if (selectedOption === null) {
-        quizNote.textContent = "Choose one option first, pretty please.";
+      if (!answerSubmitted) {
+        submitAnswer();
         return;
       }
-
-      selectedAnswers[currentQuestion] = selectedOption;
 
       if (currentQuestion === quizData.length - 1) {
         showResults();
@@ -891,6 +956,8 @@
       }
 
       currentQuestion += 1;
+      selectedOption = null;
+      answerSubmitted = false;
       hiddenOptions = [];
       renderQuestion();
     }
@@ -899,6 +966,7 @@
       currentQuestion = 0;
       selectedAnswers = [];
       selectedOption = null;
+      answerSubmitted = false;
       lifelineUsed = false;
       hiddenOptions = [];
       renderQuestion();
@@ -909,6 +977,7 @@
       currentQuestion = 0;
       selectedAnswers = [];
       selectedOption = null;
+      answerSubmitted = false;
       hiddenOptions = [];
       lifelineUsed = false;
       renderQuestion();
