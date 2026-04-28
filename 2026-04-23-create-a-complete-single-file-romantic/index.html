@@ -504,6 +504,25 @@
       margin-top: 4px;
     }
 
+    .music-toggle {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 5;
+      min-width: auto;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--accent-deep);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow:
+        0 12px 28px rgba(194, 112, 143, 0.18),
+        inset 0 0 0 1px rgba(242, 107, 152, 0.16);
+      font-size: 0.88rem;
+      font-weight: 700;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -665,7 +684,12 @@
     </div>
   </main>
 
+  <audio id="backgroundMusic" src="./about-you.mp3" preload="auto"></audio>
+  <button class="music-toggle" id="musicToggle" type="button" aria-label="Mute music">Music On</button>
+
   <script>
+    const MUSIC_START_TIME = 181;
+
     const quizData = [
       {
         question: "What was the first text I ever sent you?",
@@ -789,6 +813,8 @@
     const resultMessage = document.getElementById("resultMessage");
     const rewardText = document.getElementById("rewardText");
     const heartsContainer = document.getElementById("floatingHearts");
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    const musicToggle = document.getElementById("musicToggle");
 
     let currentQuestion = 0;
     let selectedAnswers = [];
@@ -796,6 +822,48 @@
     let answerSubmitted = false;
     let lifelineUsed = false;
     let hiddenOptions = [];
+    let musicStarted = false;
+
+    function seekMusicToStart() {
+      try {
+        backgroundMusic.currentTime = MUSIC_START_TIME;
+      } catch (error) {
+        backgroundMusic.addEventListener("loadedmetadata", seekMusicToStart, { once: true });
+      }
+    }
+
+    function updateMusicToggle() {
+      if (backgroundMusic.muted) {
+        musicToggle.textContent = "Music Off";
+        musicToggle.setAttribute("aria-label", "Unmute music");
+        return;
+      }
+
+      musicToggle.textContent = backgroundMusic.paused ? "Tap for music" : "Music On";
+      musicToggle.setAttribute("aria-label", "Mute music");
+    }
+
+    async function startMusic() {
+      if (!musicStarted) {
+        seekMusicToStart();
+      }
+
+      try {
+        await backgroundMusic.play();
+        musicStarted = true;
+      } catch (error) {
+        musicStarted = false;
+      }
+
+      updateMusicToggle();
+    }
+
+    function startMusicAfterFirstInteraction() {
+      startMusic();
+      window.removeEventListener("click", startMusicAfterFirstInteraction);
+      window.removeEventListener("touchstart", startMusicAfterFirstInteraction);
+      window.removeEventListener("keydown", startMusicAfterFirstInteraction);
+    }
 
     function setActiveScreen(screenName) {
       Object.values(screens).forEach((screen) => screen.classList.remove("active"));
@@ -1014,7 +1082,33 @@
     nextBtn.addEventListener("click", goToNextQuestion);
     playAgainBtn.addEventListener("click", resetGame);
 
+    backgroundMusic.addEventListener("loadedmetadata", () => {
+      seekMusicToStart();
+      startMusic();
+    });
+
+    backgroundMusic.addEventListener("ended", () => {
+      seekMusicToStart();
+      startMusic();
+    });
+
+    musicToggle.addEventListener("click", () => {
+      backgroundMusic.muted = !backgroundMusic.muted;
+
+      if (!backgroundMusic.muted) {
+        startMusic();
+        return;
+      }
+
+      updateMusicToggle();
+    });
+
+    window.addEventListener("click", startMusicAfterFirstInteraction);
+    window.addEventListener("touchstart", startMusicAfterFirstInteraction);
+    window.addEventListener("keydown", startMusicAfterFirstInteraction);
+
     createHearts();
+    startMusic();
   </script>
 </body>
 </html>
