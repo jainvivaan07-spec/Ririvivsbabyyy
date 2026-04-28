@@ -271,6 +271,27 @@
       padding: 24px;
     }
 
+    .welcome-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .welcome-photo-slot {
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--text-soft);
+      font-weight: 600;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(255, 230, 239, 0.8)),
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.9), transparent 60%);
+      border: 1px dashed rgba(240, 158, 190, 0.65);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.54);
+    }
+
     .section-title {
       margin: 0 0 10px;
       font-size: 1.12rem;
@@ -529,6 +550,10 @@
         grid-template-columns: 1fr;
       }
 
+      .welcome-photo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .quiz-actions {
         justify-content: center;
       }
@@ -562,19 +587,20 @@
           </div>
 
           <div class="card rules-card">
-            <p class="section-title">Rules &amp; Rewards</p>
+            <p class="section-title">Rules</p>
             <p class="rules-text">
-              1. The 50/50 lifeline can be used just once - so use it wisely.<br />
-              2. Total number of questions is 10.<br />
-              3. There's only one correct answer for each.<br /><br />
-              Rewards:<br />
-              10/10 - Ice cream + Massage + Butler for the entire day (I'll do anything you want basically) + I love you more for 4 days + I'll show you my proper dance skills<br />
-              9/10 - Ice Cream + Massage + Butler for the entire day + I love you more for 4 days<br />
-              8/10 - Ice Cream + Massage + Butler for the entire day<br />
-              7/10 - Ice Cream + Massage<br />
-              6/10 - Ice Cream<br />
-              &lt;6/10 - I don't think you love me😢
+              1. There are total 10 questions.<br />
+              2. There's only one correct answer for each.<br />
+              3. The 50/50 lifeline can be used just once - so use it wisely.<br />
+              4. The higher your score, the better your reward.
             </p>
+          </div>
+
+          <div class="welcome-photo-grid">
+            <div class="welcome-photo-slot">Photo 1</div>
+            <div class="welcome-photo-slot">Photo 2</div>
+            <div class="welcome-photo-slot">Photo 3</div>
+            <div class="welcome-photo-slot">Photo 4</div>
           </div>
         </div>
       </section>
