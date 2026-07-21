@@ -377,9 +377,51 @@ const DEFAULT_CONFIG = {
    SEED_VERSION is bumped by Claude on every publish so browsers
    that already have older seeded data pick up the new one.
    ============================================================ */
-const SEED_VERSION = 0; // bumped by Claude each time a new export is published
-const SEED_CONFIG = null;   // replaced with your exported `config` object on publish
-const SEED_MEDIA  = null;   // replaced with your exported `media` object (base64) on publish
+const SEED_VERSION = 1; // bumped by Claude each time a new export is published
+const SEED_CONFIG = {
+  logoText:"NETFLIX",
+  tabTitle:"Netflix",
+  introEnabled:true,
+  soundEnabled:true,
+  profiles:[
+    {
+      id:"p1", name:"For You", color:"#E50914", avatarMediaId:null, avatarCrop:null,
+      hero:{ badge:"Princess Girl", title:"The Prettiest girl in the world",
+             desc:"Things that make Ritigya, Ritigya",
+             mediaId:null, mediaType:null, mediaSrc:null, crop:null, bgColor:"#4a1616" },
+      rows:[
+        { id:"row1", title:"Continue Watching for You", items:[
+          { id:"it1", title:"The best dancer", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:"video", mediaSrc:"media/best-dancer.mp4", crop:null, grad:0 },
+          { id:"it2", title:"the goofy side of ritigya", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:"video", mediaSrc:"media/goofy-side.mp4", crop:null, grad:1 },
+          { id:"it3", title:"Loves to sleep", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:null, mediaSrc:null, crop:null, grad:2 },
+        ]},
+        { id:"row2", title:"Trending in Our World", items:[
+          { id:"it4", title:"loves ragebaiting her boyfriend", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:"video", mediaSrc:"media/ragebait.mp4", crop:null, grad:3 },
+          { id:"it5", title:"The best singer", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:"video", mediaSrc:"media/best-singer.mp4", crop:null, grad:4 },
+          { id:"it6", title:"worries too much about her hair", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:"video", mediaSrc:"media/worries-hair.mp4", crop:null, grad:5 },
+        ]},
+      ]
+    },
+    {
+      id:"p2", name:"Just Us", color:"#4b8ef0", avatarMediaId:null, avatarCrop:null,
+      hero:{ badge:"BEHIND THE SCENES", title:"The Little Things",
+             desc:"The unglamorous, in-between, real stuff. The silly faces, the inside jokes, the ordinary days. This is my favourite show.",
+             mediaId:null, mediaType:null, mediaSrc:null, crop:null, bgColor:"#16324a" },
+      rows:[
+        { id:"row3", title:"Because You're My Favourite Person", items:[
+          { id:"it7", title:"Silly Faces", year:"", match:98, tags:[], desc:"A collection of the faces only I get to see.", longDesc:"A collection of the faces only I get to see.", mediaId:null, mediaType:null, mediaSrc:null, crop:null, grad:7 },
+          { id:"it8", title:"Inside Jokes", year:"", match:98, tags:[], desc:"The ones nobody else would understand.", longDesc:"The ones nobody else would understand.", mediaId:null, mediaType:null, mediaSrc:null, crop:null, grad:5 },
+          { id:"it9", title:"Lazy Sundays", year:"", match:98, tags:[], desc:"Doing nothing, together. The best episodes.", longDesc:"Doing nothing, together. The best episodes.", mediaId:null, mediaType:null, mediaSrc:null, crop:null, grad:2 },
+        ]},
+        { id:"row4", title:"Coming Soon", items:[
+          { id:"it10", title:"All The Places We'll Go", year:"", match:98, tags:[], desc:"Add a photo of a place you dream of visiting together.", longDesc:"Add a photo of a place you dream of visiting together.", mediaId:null, mediaType:null, mediaSrc:null, crop:null, grad:4 },
+          { id:"it11", title:"Our Someday", year:"", match:98, tags:[], desc:"Leave a little note about the future here.", longDesc:"Leave a little note about the future here.", mediaId:null, mediaType:null, mediaSrc:null, crop:null, grad:0 },
+        ]},
+      ]
+    }
+  ]
+};   // baked in by Claude from what you've sent so far; hero photo + "Loves to sleep" photo still pending
+const SEED_MEDIA  = null;   // not used when items reference mediaSrc directly (static files) rather than embedded blobs
 
 /* ============================================================
    Storage: config in localStorage, media blobs in IndexedDB
@@ -447,7 +489,12 @@ async function maybeSeed(){
 /* Non-destructive crop: object-position + scale, applied to an img/video fill */
 function normCrop(c){ c=c||{}; return { scale:(c.scale||1), x:(c.x==null?50:c.x), y:(c.y==null?50:c.y) }; }
 function cropStyle(c){ c=normCrop(c); return `object-fit:cover;object-position:${c.x}% ${c.y}%;transform:scale(${c.scale});transform-origin:center;`; }
-function mediaFill(mid,mtype,crop){
+/* src = optional direct URL for Claude-published static media (bypasses IndexedDB entirely) */
+function mediaFill(mid,mtype,crop,src){
+  if(src){
+    if(mtype==="video") return `<video class="mfill" src="${src}" muted loop playsinline style="${cropStyle(crop)}"></video>`;
+    return `<img class="mfill" src="${src}" style="${cropStyle(crop)}">`;
+  }
   if(!mid) return "";
   if(mtype==="video") return `<video class="mfill" data-mid="${mid}" data-mtype="video" muted loop playsinline style="${cropStyle(crop)}"></video>`;
   return `<img class="mfill" data-mid="${mid}" data-mtype="image" style="${cropStyle(crop)}">`;
@@ -526,7 +573,7 @@ async function showProfiles(){
     const initial=(prof.name||"?").trim().charAt(0).toUpperCase();
     const d=document.createElement("div"); d.className="profile";
     d.innerHTML=`
-      <div class="avatar" style="background:${prof.avatarMediaId?'#000':gradFor(idx)}">${prof.avatarMediaId?mediaFill(prof.avatarMediaId,'image',prof.avatarCrop):initial}</div>
+      <div class="avatar" style="background:${(prof.avatarMediaId||prof.avatarSrc)?'#000':gradFor(idx)}">${(prof.avatarMediaId||prof.avatarSrc)?mediaFill(prof.avatarMediaId,'image',prof.avatarCrop,prof.avatarSrc):initial}</div>
       <div class="pname">${escapeHtml(prof.name)}</div>
       ${manageMode?`<div class="edit-pencil">✎</div>`:''}`;
     if(manageMode){ d.onclick=()=>editProfile(prof); }
@@ -561,7 +608,7 @@ function renderBrowse(){
   const idx=config.profiles.indexOf(prof);
   const initial=(prof.name||"?").charAt(0).toUpperCase();
   const who=document.getElementById("navWho");
-  who.innerHTML=`<div class="mini" style="background:${prof.avatarMediaId?'#000':gradFor(idx)}">${prof.avatarMediaId?mediaFill(prof.avatarMediaId,'image',prof.avatarCrop):initial}</div>`;
+  who.innerHTML=`<div class="mini" style="background:${(prof.avatarMediaId||prof.avatarSrc)?'#000':gradFor(idx)}">${(prof.avatarMediaId||prof.avatarSrc)?mediaFill(prof.avatarMediaId,'image',prof.avatarCrop,prof.avatarSrc):initial}</div>`;
   renderHero(prof);
   renderRows(prof);
   hydrate(document.getElementById("browse"));
@@ -573,7 +620,7 @@ function renderHero(prof){
   mount.innerHTML=`
     <div class="hero">
       <div class="bg-frame" style="background:${h.bgColor}">
-        ${h.mediaId ? mediaFill(h.mediaId,h.mediaType,h.crop) : `<div class="grad" style="position:absolute;inset:0;background:linear-gradient(135deg,${h.bgColor},#000)"></div>`}
+        ${(h.mediaId||h.mediaSrc) ? mediaFill(h.mediaId,h.mediaType,h.crop,h.mediaSrc) : `<div class="grad" style="position:absolute;inset:0;background:linear-gradient(135deg,${h.bgColor},#000)"></div>`}
       </div>
       <div class="fade"></div>
       ${editMode?`<button class="edit-hero" onclick="editHero()">✎ Edit banner</button>`:''}
@@ -622,9 +669,9 @@ function renderRows(prof){
 }
 
 function cardHtml(prof,r,it,ii){
-  const hasMedia=!!it.mediaId;
-  const mediaEl = hasMedia
-    ? `<div class="media" style="background:#000">${mediaFill(it.mediaId,it.mediaType,it.crop)}</div>`
+  const itemHasMedia=!!(it.mediaId||it.mediaSrc);
+  const mediaEl = itemHasMedia
+    ? `<div class="media" style="background:#000">${mediaFill(it.mediaId,it.mediaType,it.crop,it.mediaSrc)}</div>`
     : `<div class="media grad" style="background:${gradFor(it.grad||ii)}"></div>`;
   return `<div class="card" onclick="openDetail('${r.id}','${it.id}')">
       ${mediaEl}
@@ -653,9 +700,9 @@ function findItem(rid,iid){ const p=curProfile(); const r=p.rows.find(x=>x.id===
 function openDetail(rid,iid){
   if(editMode){ editItem(rid,iid); return; }
   const {it}=findItem(rid,iid);
-  const hasMedia=!!it.mediaId;
-  const topMedia = hasMedia
-    ? `<div class="media" style="background:#000">${mediaFill(it.mediaId,it.mediaType,it.crop)}</div>`
+  const itemHasMedia=!!(it.mediaId||it.mediaSrc);
+  const topMedia = itemHasMedia
+    ? `<div class="media" style="background:#000">${mediaFill(it.mediaId,it.mediaType,it.crop,it.mediaSrc)}</div>`
     : `<div class="media grad" style="background:${gradFor(it.grad||0)}"></div>`;
   const tags=(it.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("");
   const html=`
@@ -683,13 +730,13 @@ function openDetail(rid,iid){
 
 function playHero(){
   const h=curProfile().hero;
-  if(!h.mediaId){ toast("Add a banner photo or video in Edit mode ✎"); return; }
-  openPlayer(h.mediaId,h.mediaType,h.title);
+  if(!h.mediaId && !h.mediaSrc){ toast("Add a banner photo or video in Edit mode ✎"); return; }
+  openPlayer(h.mediaId,h.mediaType,h.title,h.mediaSrc);
 }
-function playItem(rid,iid){ const {it}=findItem(rid,iid); if(!it.mediaId){ toast("Add a photo or video to this memory first ✎"); return; } openPlayer(it.mediaId,it.mediaType,it.title); }
+function playItem(rid,iid){ const {it}=findItem(rid,iid); if(!it.mediaId && !it.mediaSrc){ toast("Add a photo or video to this memory first ✎"); return; } openPlayer(it.mediaId,it.mediaType,it.title,it.mediaSrc); }
 
-async function openPlayer(mid,type,caption){
-  const u=await mediaUrl(mid);
+async function openPlayer(mid,type,caption,src){
+  const u=src || await mediaUrl(mid);
   let inner;
   if(type==="video"){ inner=`<video src="${u}" controls autoplay playsinline></video>`; }
   else { inner=`<img class="ki" src="${u}" /><div class="caption">${escapeHtml(caption||'')}</div>`; }
