@@ -1,1277 +1,982 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Happy 5 Months ❤️</title>
-  <style>
-    :root {
-      --bg-1: #fff8fb;
-      --bg-2: #ffdce8;
-      --bg-3: #ffc6da;
-      --surface: rgba(255, 255, 255, 0.72);
-      --surface-strong: rgba(255, 255, 255, 0.88);
-      --border: rgba(255, 255, 255, 0.7);
-      --text: #6e3a51;
-      --text-soft: #a4647c;
-      --accent: #f26b98;
-      --accent-deep: #dd4c81;
-      --accent-pale: #ffeaf1;
-      --success: #ff8fb3;
-      --shadow: 0 20px 60px rgba(194, 112, 143, 0.18);
-      --radius-xl: 32px;
-      --radius-lg: 24px;
-      --radius-md: 18px;
-      --transition: 260ms ease;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      font-family: Poppins, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 34%),
-        radial-gradient(circle at bottom right, rgba(255, 236, 243, 0.9), transparent 30%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
-      overflow-x: hidden;
-    }
-
-    body.gate-locked {
-      overflow: hidden;
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      inset: auto;
-      width: 280px;
-      height: 280px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.32);
-      filter: blur(12px);
-      z-index: 0;
-      animation: driftGlow 10s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-
-    body::before {
-      top: 6%;
-      right: -90px;
-    }
-
-    body::after {
-      bottom: 8%;
-      left: -90px;
-      animation-duration: 13s;
-    }
-
-    .floating-hearts {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .heart {
-      position: absolute;
-      bottom: -40px;
-      width: 18px;
-      height: 18px;
-      background: rgba(255, 255, 255, 0.55);
-      transform: rotate(45deg);
-      animation: floatHeart linear infinite;
-      opacity: 0.55;
-      filter: blur(0.2px);
-    }
-
-    .heart::before,
-    .heart::after {
-      content: "";
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      background: inherit;
-      border-radius: 50%;
-    }
-
-    .heart::before {
-      left: -9px;
-    }
-
-    .heart::after {
-      top: -9px;
-    }
-
-    .page {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px 18px;
-      opacity: 1;
-      transition: opacity 420ms ease;
-    }
-
-    body.gate-locked .page,
-    body.gate-locked .floating-hearts,
-    body.gate-locked .music-toggle {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .password-gate {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background:
-        radial-gradient(circle at top, rgba(255, 255, 255, 0.16), transparent 34%),
-        linear-gradient(135deg, #d6d6d6, #eeeeee);
-      opacity: 1;
-      transition: opacity 520ms ease, visibility 520ms ease;
-    }
-
-    .password-gate.unlocked {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .gate-panel {
-      width: min(100%, 420px);
-      padding: 30px;
-      border-radius: var(--radius-lg);
-      background: rgba(255, 255, 255, 0.78);
-      box-shadow: 0 24px 70px rgba(70, 70, 70, 0.18);
-      text-align: center;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .gate-title {
-      margin: 0 0 18px;
-      color: #5f5f5f;
-      font-size: 1.35rem;
-      font-weight: 700;
-    }
-
-    .gate-form {
-      display: grid;
-      gap: 12px;
-    }
-
-    .gate-input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1px solid rgba(120, 120, 120, 0.26);
-      border-radius: 999px;
-      outline: 0;
-      color: #555555;
-      background: rgba(255, 255, 255, 0.88);
-      font: inherit;
-      text-align: center;
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-
-    .gate-input:focus {
-      border-color: rgba(242, 107, 152, 0.65);
-      box-shadow: 0 0 0 4px rgba(242, 107, 152, 0.14);
-    }
-
-    .gate-submit {
-      width: 100%;
-      padding: 14px 18px;
-      border-radius: 999px;
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-      font-weight: 700;
-      box-shadow: 0 12px 26px rgba(221, 76, 129, 0.22);
-    }
-
-    .gate-error {
-      min-height: 22px;
-      margin: 2px 0 0;
-      color: var(--accent-deep);
-      font-size: 0.94rem;
-      font-weight: 600;
-    }
-
-    .shell {
-      width: min(100%, 980px);
-      position: relative;
-    }
-
-    .screen {
-      display: none;
-      opacity: 0;
-      transform: translateY(16px) scale(0.985);
-      transition: opacity 420ms ease, transform 420ms ease;
-    }
-
-    .screen.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      animation: fadeInUp 620ms ease;
-    }
-
-    .card {
-      position: relative;
-      overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      padding: 28px;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.45), transparent 45%, rgba(255, 228, 236, 0.35));
-      pointer-events: none;
-    }
-
-    .welcome-layout,
-    .result-layout {
-      display: grid;
-      gap: 22px;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 26px 18px 14px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 16px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 999px;
-      color: var(--text-soft);
-      font-size: 0.92rem;
-      letter-spacing: 0.02em;
-      margin-bottom: 18px;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
-    }
-
-    h1, h2 {
-      margin: 0;
-      line-height: 1.05;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    h1 {
-      font-size: clamp(2.4rem, 5vw, 4.5rem);
-    }
-
-    h2 {
-      font-size: clamp(1.65rem, 4vw, 2.6rem);
-    }
-
-    .subtitle,
-    .result-message,
-    .rules-text,
-    .reward-copy {
-      margin: 0;
-      color: var(--text-soft);
-      line-height: 1.7;
-    }
-
-    .subtitle {
-      max-width: 560px;
-      margin: 14px auto 0;
-      font-size: 1.05rem;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 14px;
-      margin-top: 28px;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font: inherit;
-      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), opacity var(--transition);
-    }
-
-    .btn-primary,
-    .btn-secondary,
-    .btn-soft {
-      min-width: 148px;
-      padding: 14px 22px;
-      border-radius: 999px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-
-    .btn-primary {
-      color: #fff;
-      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-      box-shadow: 0 14px 28px rgba(232, 96, 145, 0.28);
-    }
-
-    .btn-secondary {
-      color: var(--accent-deep);
-      background: rgba(255, 255, 255, 0.78);
-      box-shadow: inset 0 0 0 1px rgba(242, 107, 152, 0.16);
-    }
-
-    .btn-soft {
-      color: var(--text);
-      background: rgba(255, 244, 248, 0.95);
-      box-shadow: inset 0 0 0 1px rgba(255, 210, 225, 0.92);
-    }
-
-    button:hover:not(:disabled) {
-      transform: translateY(-2px) scale(1.02);
-    }
-
-    button:active:not(:disabled) {
-      transform: translateY(0) scale(0.99);
-    }
-
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .rules-card,
-    .quiz-card,
-    .result-card {
-      padding: 24px;
-    }
-
-    .welcome-photo-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .welcome-photo-slot {
-      aspect-ratio: 1;
-      overflow: hidden;
-      border-radius: var(--radius-lg);
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.72);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.54);
-    }
-
-    .welcome-photo-img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: linear-gradient(135deg, rgba(255, 244, 248, 0.9), rgba(255, 255, 255, 0.8));
-    }
-
-    .section-title {
-      margin: 0 0 10px;
-      font-size: 1.12rem;
-      font-weight: 600;
-      color: var(--accent-deep);
-    }
-
-    .quiz-card {
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .quiz-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-    }
-
-    .progress-chip,
-    .score-chip {
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.74);
-      color: var(--text-soft);
-      font-size: 0.95rem;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
-    }
-
-    .question-box {
-      padding: 20px;
-      border-radius: var(--radius-lg);
-      background: var(--surface-strong);
-      box-shadow: inset 0 0 0 1px rgba(255, 227, 236, 0.9);
-    }
-
-    .question-label {
-      color: var(--accent-deep);
-      font-size: 0.94rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      margin-bottom: 10px;
-    }
-
-    .question-text {
-      margin: 0;
-      font-size: clamp(1.35rem, 3vw, 2rem);
-      line-height: 1.35;
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .option {
-      position: relative;
-      text-align: left;
-      padding: 18px 18px 18px 58px;
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: inset 0 0 0 1px rgba(247, 198, 217, 0.78);
-      color: var(--text);
-      min-height: 88px;
-      display: flex;
-      align-items: center;
-    }
-
-    .option::before {
-      content: attr(data-letter);
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--accent-deep);
-      background: var(--accent-pale);
-    }
-
-    .option.selected {
-      background: linear-gradient(135deg, rgba(255, 244, 248, 0.98), rgba(255, 228, 236, 0.98));
-      box-shadow:
-        inset 0 0 0 2px rgba(242, 107, 152, 0.58),
-        0 12px 24px rgba(227, 135, 171, 0.15);
-      transform: translateY(-1px);
-    }
-
-    .option.correct {
-      background: linear-gradient(135deg, rgba(226, 255, 234, 0.98), rgba(168, 239, 188, 0.98));
-      box-shadow:
-        inset 0 0 0 2px rgba(42, 166, 88, 0.58),
-        0 12px 24px rgba(65, 166, 101, 0.16);
-      color: #245235;
-    }
-
-    .option.correct::before {
-      color: #245235;
-      background: rgba(255, 255, 255, 0.68);
-    }
-
-    .option.incorrect {
-      background: linear-gradient(135deg, rgba(255, 232, 235, 0.98), rgba(255, 169, 183, 0.98));
-      box-shadow:
-        inset 0 0 0 2px rgba(219, 66, 88, 0.58),
-        0 12px 24px rgba(219, 66, 88, 0.16);
-      color: #7b2633;
-    }
-
-    .option.incorrect::before {
-      color: #7b2633;
-      background: rgba(255, 255, 255, 0.68);
-    }
-
-    .option:disabled {
-      cursor: default;
-    }
-
-    .option.hidden-by-lifeline {
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .quiz-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
-
-    .quiz-note {
-      margin-top: 14px;
-      min-height: 24px;
-      color: var(--text-soft);
-      font-size: 0.94rem;
-    }
-
-    .result-layout {
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .score-display {
-      font-size: clamp(2.1rem, 5vw, 3.4rem);
-      font-weight: 700;
-      color: var(--accent-deep);
-      margin: 8px 0 10px;
-    }
-
-    .reward-box,
-    .image-frame {
-      border-radius: var(--radius-lg);
-      background: rgba(255, 255, 255, 0.78);
-      box-shadow: inset 0 0 0 1px rgba(247, 211, 223, 0.9);
-    }
-
-    .reward-box {
-      padding: 20px;
-    }
-
-    .image-frame {
-      position: relative;
-      padding: 14px;
-      overflow: hidden;
-    }
-
-    .memory-photo {
-      display: block;
-      width: 100%;
-      border-radius: calc(var(--radius-lg) - 6px);
-      object-fit: cover;
-      box-shadow: 0 20px 40px rgba(215, 126, 158, 0.2);
-    }
-
-    .photo-caption {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.42);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 10px 26px rgba(90, 40, 61, 0.16);
-      color: #ffffff;
-      font-size: clamp(0.95rem, 2vw, 1.18rem);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-shadow: 0 2px 10px rgba(73, 27, 46, 0.55);
-      text-align: center;
-      pointer-events: none;
-    }
-
-    .signature {
-      text-align: center;
-      color: var(--text-soft);
-      font-size: 0.96rem;
-      margin-top: 4px;
-    }
-
-    .music-toggle {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 5;
-      min-width: auto;
-      padding: 10px 14px;
-      border-radius: 999px;
-      color: var(--accent-deep);
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow:
-        0 12px 28px rgba(194, 112, 143, 0.18),
-        inset 0 0 0 1px rgba(242, 107, 152, 0.16);
-      font-size: 0.88rem;
-      font-weight: 700;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.985);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    @keyframes driftGlow {
-      from {
-        transform: translateY(0) scale(1);
-      }
-      to {
-        transform: translateY(20px) scale(1.1);
-      }
-    }
-
-    @keyframes floatHeart {
-      0% {
-        transform: translateY(0) rotate(45deg) scale(0.9);
-        opacity: 0;
-      }
-      15% {
-        opacity: 0.55;
-      }
-      100% {
-        transform: translateY(-112vh) rotate(45deg) scale(1.15);
-        opacity: 0;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .card,
-      .quiz-card,
-      .result-card,
-      .rules-card {
-        padding: 20px;
-      }
-
-      .options {
-        grid-template-columns: 1fr;
-      }
-
-      .welcome-photo-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .quiz-actions {
-        justify-content: center;
-      }
-
-      .btn-primary,
-      .btn-secondary,
-      .btn-soft {
-        width: 100%;
-      }
-
-      .quiz-header {
-        justify-content: center;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Netflix</title>
+<style>
+  /* ---------- Base ---------- */
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --red:#E50914;
+    --bg:#141414;
+    --card:#2b2b2b;
+    --text:#fff;
+    --muted:#b3b3b3;
+  }
+  html,body{ background:#000; color:var(--text); font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; overflow-x:hidden; }
+  body{ min-height:100vh; }
+  img,video{ display:block; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  input,textarea,select{ font-family:inherit; }
+  a{ color:inherit; text-decoration:none; }
+  ::-webkit-scrollbar{ height:0; width:8px; }
+  ::-webkit-scrollbar-thumb{ background:#333; border-radius:8px; }
+
+  .hidden{ display:none !important; }
+
+  /* ---------- Logo wordmark ---------- */
+  .logo{
+    color:var(--red); font-weight:800; letter-spacing:-1px;
+    font-family:"Arial Narrow",Arial,sans-serif; text-transform:uppercase;
+    transform:scaleY(1.15); display:inline-block; user-select:none;
+    text-shadow:0 0 12px rgba(229,9,20,.25);
+  }
+
+  /* ---------- Intro ---------- */
+  #intro{
+    position:fixed; inset:0; background:#000; z-index:1000;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+  }
+  #intro .logo{ font-size:clamp(56px,16vw,190px); animation:introZoom 3.4s cubic-bezier(.6,0,.2,1) forwards; }
+  #intro .sub{ margin-top:14px; color:var(--muted); letter-spacing:4px; font-size:13px; opacity:0; animation:fadeIn .8s ease 1s forwards; }
+  #intro .skip{
+    position:absolute; bottom:26px; right:26px; color:var(--muted);
+    border:1px solid #444; padding:8px 16px; border-radius:4px; font-size:13px; letter-spacing:1px;
+  }
+  #intro .skip:hover{ color:#fff; border-color:#888; }
+  @keyframes introZoom{
+    0%{ transform:scale(6) scaleY(1.15); opacity:0; filter:blur(6px); }
+    18%{ opacity:1; filter:blur(0); }
+    55%{ transform:scale(1) scaleY(1.15); }
+    82%{ transform:scale(1) scaleY(1.15); opacity:1; }
+    100%{ transform:scale(1) scaleY(1.15); opacity:0; }
+  }
+  @keyframes fadeIn{ to{ opacity:1; } }
+
+  /* ---------- Profile picker ---------- */
+  #profiles{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; flex-direction:column; z-index:500; }
+  #profiles h1{ font-size:clamp(26px,5vw,52px); font-weight:400; margin-bottom:44px; text-align:center; }
+  .profile-row{ display:flex; gap:clamp(18px,4vw,48px); flex-wrap:wrap; justify-content:center; }
+  .profile{ display:flex; flex-direction:column; align-items:center; gap:14px; cursor:pointer; position:relative; }
+  .profile .avatar{
+    width:clamp(90px,16vw,160px); height:clamp(90px,16vw,160px); border-radius:8px;
+    background-size:cover; background-position:center; border:3px solid transparent;
+    display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:700; color:#fff;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .profile:hover .avatar{ transform:scale(1.04); border-color:#fff; }
+  .profile .pname{ color:var(--muted); font-size:clamp(15px,2vw,20px); transition:color .2s; }
+  .profile:hover .pname{ color:#fff; }
+  .profile .edit-pencil{
+    position:absolute; top:6px; right:6px; background:rgba(0,0,0,.7); width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:15px; opacity:0; transition:opacity .2s;
+  }
+  .profile:hover .edit-pencil{ opacity:1; }
+  #profiles .manage{ margin-top:48px; border:1px solid var(--muted); color:var(--muted); padding:10px 24px; letter-spacing:2px; font-size:14px; text-transform:uppercase; border-radius:2px; }
+  #profiles .manage:hover{ border-color:#fff; color:#fff; }
+
+  /* ---------- Top nav ---------- */
+  #browse{ display:none; }
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:200; display:flex; align-items:center; gap:26px;
+    padding:18px clamp(16px,4vw,60px); transition:background .3s ease;
+    background:linear-gradient(180deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,0) 100%);
+  }
+  .nav.solid{ background:var(--bg); }
+  .nav .logo{ font-size:30px; cursor:pointer; }
+  .nav .links{ display:flex; gap:20px; font-size:14px; color:#e5e5e5; }
+  .nav .links span{ cursor:default; }
+  .nav .links span:hover{ color:#b3b3b3; }
+  .nav .spacer{ flex:1; }
+  .nav .who{ display:flex; align-items:center; gap:10px; font-size:14px; }
+  .nav .who .mini{ width:32px; height:32px; border-radius:4px; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .nav .icon-btn{ font-size:18px; padding:6px; border-radius:4px; }
+  .nav .icon-btn:hover{ background:rgba(255,255,255,.12); }
+  .nav .edit-toggle{ border:1px solid #555; padding:7px 14px; border-radius:4px; font-size:13px; letter-spacing:1px; }
+  .nav .edit-toggle.on{ background:var(--red); border-color:var(--red); }
+
+  /* ---------- Hero ---------- */
+  .hero{ position:relative; height:78vh; min-height:460px; display:flex; align-items:flex-end; }
+  .hero .bg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
+  .hero .bg.kenburns{ animation:kenburns 26s ease-in-out infinite alternate; }
+  @keyframes kenburns{ from{ transform:scale(1); } to{ transform:scale(1.12); } }
+  .hero video.bg{ width:100%; height:100%; object-fit:cover; }
+  .hero .fade{ position:absolute; inset:0; z-index:1;
+    background:linear-gradient(90deg, rgba(20,20,20,.9) 0%, rgba(20,20,20,.45) 40%, rgba(20,20,20,0) 70%),
+               linear-gradient(0deg, var(--bg) 2%, rgba(20,20,20,0) 45%); }
+  .hero .content{ position:relative; z-index:2; padding:0 clamp(16px,4vw,60px) clamp(40px,8vh,120px); max-width:640px; }
+  .hero .badge{ display:inline-flex; align-items:center; gap:8px; letter-spacing:3px; font-size:13px; color:#fff; margin-bottom:14px; }
+  .hero .badge b{ color:var(--red); font-size:20px; font-weight:800; }
+  .hero h2{ font-size:clamp(30px,6vw,74px); font-weight:800; line-height:1; margin-bottom:16px; text-shadow:0 2px 12px rgba(0,0,0,.6); }
+  .hero p{ font-size:clamp(14px,1.6vw,19px); color:#e5e5e5; line-height:1.4; margin-bottom:22px; text-shadow:0 1px 6px rgba(0,0,0,.7); max-width:560px; }
+  .hero .actions{ display:flex; gap:12px; flex-wrap:wrap; }
+  .btn-play{ background:#fff; color:#000; padding:11px 28px; border-radius:5px; font-weight:700; font-size:17px; display:flex; align-items:center; gap:9px; }
+  .btn-play:hover{ background:rgba(255,255,255,.78); }
+  .btn-info{ background:rgba(109,109,110,.6); color:#fff; padding:11px 24px; border-radius:5px; font-weight:600; font-size:17px; display:flex; align-items:center; gap:9px; }
+  .btn-info:hover{ background:rgba(109,109,110,.42); }
+  .hero .edit-hero{ position:absolute; z-index:3; top:88px; right:clamp(16px,4vw,60px); background:rgba(0,0,0,.65); border:1px solid #555; padding:8px 14px; border-radius:4px; font-size:13px; }
+
+  /* ---------- Rows ---------- */
+  .rows{ position:relative; z-index:5; margin-top:-70px; padding-bottom:60px; }
+  .row{ margin:0 0 34px; }
+  .row .rhead{ display:flex; align-items:center; gap:12px; padding:0 clamp(16px,4vw,60px); margin-bottom:10px; }
+  .row h3{ font-size:clamp(16px,1.6vw,22px); font-weight:700; }
+  .row .rhead .ractions{ display:flex; gap:6px; }
+  .row .rhead button{ background:#222; border:1px solid #444; border-radius:4px; padding:3px 9px; font-size:12px; color:#ccc; }
+  .row .rhead button:hover{ background:#333; color:#fff; }
+  .track-wrap{ position:relative; }
+  .track{ display:flex; gap:8px; overflow-x:auto; scroll-behavior:smooth; padding:12px clamp(16px,4vw,60px); }
+  .arrow{ position:absolute; top:0; bottom:0; width:clamp(30px,4vw,54px); z-index:20; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; font-size:26px; opacity:0; transition:opacity .2s; }
+  .track-wrap:hover .arrow{ opacity:1; }
+  .arrow.left{ left:0; } .arrow.right{ right:0; }
+  .arrow:hover{ background:rgba(0,0,0,.75); }
+
+  .card{ position:relative; flex:0 0 auto; width:clamp(160px,20vw,300px); aspect-ratio:16/9; border-radius:6px; overflow:hidden; background:#222; cursor:pointer; transition:transform .28s cubic-bezier(.3,0,.2,1); }
+  .card .media{ position:absolute; inset:0; background-size:cover; background-position:center; }
+  .card video.media{ width:100%; height:100%; object-fit:cover; }
+  .card .grad{ position:absolute; inset:0; }
+  .card .label{ position:absolute; left:0; right:0; bottom:0; padding:26px 12px 10px; font-weight:700; font-size:15px;
+    background:linear-gradient(0deg, rgba(0,0,0,.85), rgba(0,0,0,0)); }
+  .card .type-dot{ position:absolute; top:8px; right:8px; background:rgba(0,0,0,.6); border-radius:3px; font-size:10px; padding:2px 6px; letter-spacing:1px; }
+  .card .cedit{ position:absolute; top:8px; left:8px; background:rgba(0,0,0,.7); width:28px; height:28px; border-radius:50%; display:none; align-items:center; justify-content:center; font-size:13px; }
+  .card:hover{ transform:scale(1.14); z-index:30; box-shadow:0 12px 30px rgba(0,0,0,.7); }
+  body.editing .card .cedit{ display:flex; }
+  body.editing .card:hover{ transform:scale(1.05); }
+
+  .card.add{ display:flex; align-items:center; justify-content:center; border:2px dashed #555; background:#1c1c1c; }
+  .card.add .plus{ font-size:34px; color:#777; }
+  .card.add:hover{ transform:none; border-color:#999; }
+  .card.add:hover .plus{ color:#fff; }
+
+  .row.add-row{ padding:0 clamp(16px,4vw,60px) 40px; }
+  .row.add-row button{ border:2px dashed #555; background:#1a1a1a; color:#aaa; padding:16px; width:100%; border-radius:8px; font-size:15px; letter-spacing:1px; }
+  .row.add-row button:hover{ border-color:#999; color:#fff; }
+
+  /* ---------- Detail modal ---------- */
+  .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:800; display:flex; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto; }
+  .modal{ background:#181818; width:min(880px,100%); border-radius:8px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.7); animation:pop .25s ease; }
+  @keyframes pop{ from{ transform:scale(.94); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .modal .top{ position:relative; aspect-ratio:16/9; background:#000; }
+  .modal .top .media{ position:absolute; inset:0; background-size:cover; background-position:center; }
+  .modal .top video, .modal .top img{ width:100%; height:100%; object-fit:contain; background:#000; }
+  .modal .top .grad{ position:absolute; inset:0; }
+  .modal .top .vfade{ position:absolute; inset:0; background:linear-gradient(0deg,#181818 1%, transparent 40%); pointer-events:none; }
+  .modal .top .mtitle{ position:absolute; left:26px; bottom:20px; font-size:clamp(22px,4vw,40px); font-weight:800; text-shadow:0 2px 10px #000; }
+  .modal .close{ position:absolute; top:14px; right:14px; background:#181818; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; z-index:5; }
+  .modal .body{ padding:22px 26px 30px; }
+  .modal .meta{ display:flex; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
+  .modal .match{ color:#46d369; font-weight:700; }
+  .modal .yr{ color:var(--muted); }
+  .modal .tag{ background:#333; border-radius:20px; padding:3px 12px; font-size:12px; color:#ddd; }
+  .modal .desc{ color:#d2d2d2; line-height:1.5; font-size:16px; white-space:pre-wrap; }
+  .modal .mplay{ background:#fff; color:#000; padding:9px 24px; border-radius:5px; font-weight:700; display:inline-flex; gap:8px; margin-bottom:18px; }
+  .modal .mplay:hover{ background:rgba(255,255,255,.8); }
+
+  /* ---------- Player / lightbox ---------- */
+  .player-back{ position:fixed; inset:0; background:#000; z-index:900; display:flex; align-items:center; justify-content:center; }
+  .player-back video{ max-width:100%; max-height:100%; }
+  .player-back .ki{ max-width:100%; max-height:100%; object-fit:contain; animation:kenburns 20s ease-in-out infinite alternate; }
+  .player-back .pclose{ position:absolute; top:20px; left:20px; font-size:30px; z-index:5; background:rgba(0,0,0,.4); width:48px; height:48px; border-radius:50%; }
+  .player-back .caption{ position:absolute; bottom:34px; left:0; right:0; text-align:center; font-size:20px; text-shadow:0 2px 10px #000; padding:0 20px; }
+
+  /* ---------- Edit forms ---------- */
+  .form-back{ position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:850; display:flex; align-items:flex-start; justify-content:center; padding:36px 16px; overflow-y:auto; }
+  .form{ background:#1c1c1c; width:min(560px,100%); border-radius:10px; padding:26px; box-shadow:0 20px 60px rgba(0,0,0,.7); }
+  .form h3{ font-size:22px; margin-bottom:6px; }
+  .form .hint{ color:var(--muted); font-size:13px; margin-bottom:18px; }
+  .form label{ display:block; font-size:13px; color:#bbb; margin:14px 0 5px; letter-spacing:.3px; }
+  .form input[type=text], .form input[type=number], .form textarea, .form select{
+    width:100%; background:#2b2b2b; border:1px solid #444; border-radius:6px; color:#fff; padding:11px 12px; font-size:15px;
+  }
+  .form textarea{ min-height:78px; resize:vertical; }
+  .form input:focus,.form textarea:focus{ outline:none; border-color:#888; }
+  .form .media-drop{ border:2px dashed #555; border-radius:8px; padding:18px; text-align:center; color:#999; margin-top:6px; cursor:pointer; position:relative; overflow:hidden; }
+  .form .media-drop:hover{ border-color:#999; color:#ccc; }
+  .form .media-drop.has{ padding:0; border-style:solid; }
+  .form .media-drop .preview{ width:100%; aspect-ratio:16/9; background:#000; background-size:cover; background-position:center; }
+  .form .media-drop video{ width:100%; aspect-ratio:16/9; object-fit:cover; background:#000; }
+  .form .media-drop .rm{ position:absolute; top:8px; right:8px; background:rgba(0,0,0,.75); padding:5px 10px; border-radius:4px; font-size:12px; }
+  .form .swatches{ display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
+  .form .swatch{ width:34px; height:34px; border-radius:6px; border:2px solid transparent; }
+  .form .swatch.sel{ border-color:#fff; }
+  .form .actions{ display:flex; gap:10px; margin-top:24px; flex-wrap:wrap; }
+  .form .actions .save{ background:var(--red); color:#fff; padding:11px 26px; border-radius:6px; font-weight:700; }
+  .form .actions .save:hover{ background:#c40812; }
+  .form .actions .cancel{ background:#333; padding:11px 22px; border-radius:6px; }
+  .form .actions .cancel:hover{ background:#444; }
+  .form .actions .del{ background:transparent; border:1px solid #703; color:#f77; padding:11px 18px; border-radius:6px; margin-left:auto; }
+  .form .actions .del:hover{ background:#3a0010; }
+  .form .row2{ display:flex; gap:12px; } .form .row2 > div{ flex:1; }
+  .form .settings-links{ display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+  .form .settings-links button{ background:#2b2b2b; border:1px solid #444; border-radius:6px; padding:9px 14px; font-size:13px; }
+  .form .settings-links button:hover{ background:#3a3a3a; }
+  .form .toggle{ display:flex; align-items:center; gap:10px; margin-top:14px; font-size:14px; color:#ccc; }
+  .form .toggle input{ width:18px; height:18px; }
+  .form .publish-note{ background:#241a05; border:1px solid #6b4c00; color:#f0c667; border-radius:8px; padding:14px; font-size:13px; line-height:1.5; margin-top:18px; }
+
+  /* ---------- Edit hint banner ---------- */
+  .hint-banner{ position:fixed; bottom:0; left:0; right:0; z-index:150; background:rgba(0,0,0,.92); border-top:1px solid #333; padding:12px 18px; display:flex; align-items:center; gap:14px; font-size:14px; }
+  .hint-banner b{ color:var(--red); }
+  .hint-banner .x{ margin-left:auto; background:#333; padding:6px 12px; border-radius:4px; }
+  .hint-banner .x:hover{ background:#444; }
+
+  .toast{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#333; border:1px solid #555; padding:12px 22px; border-radius:6px; z-index:2000; font-size:14px; opacity:0; transition:opacity .3s, transform .3s; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+
+  @media (max-width:600px){
+    .nav .links{ display:none; }
+    .hero{ height:70vh; }
+  }
+</style>
 </head>
-<body class="gate-locked">
-  <div class="password-gate" id="passwordGate" aria-modal="true" role="dialog">
-    <div class="gate-panel">
-      <p class="gate-title">First Date(DD/MM/YY)?</p>
-      <form class="gate-form" id="passwordForm">
-        <input
-          class="gate-input"
-          id="passwordInput"
-          type="text"
-          autocomplete="off"
-          placeholder="DD/MM/YY"
-          aria-label="Password"
-        />
-        <button class="gate-submit" type="submit">Submit</button>
-        <p class="gate-error" id="passwordError" aria-live="polite"></p>
-      </form>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="logo" id="introLogo">NETFLIX</div>
+  <div class="sub" id="introSub">A LOVE ORIGINAL</div>
+  <button class="skip" onclick="skipIntro()">Skip intro ⏭</button>
+</div>
+
+<!-- PROFILE PICKER -->
+<div id="profiles" class="hidden">
+  <h1>Who's watching?</h1>
+  <div class="profile-row" id="profileRow"></div>
+  <button class="manage" id="manageBtn" onclick="toggleManage()">Manage Profiles</button>
+</div>
+
+<!-- BROWSE -->
+<div id="browse">
+  <div class="nav" id="nav">
+    <div class="logo" id="navLogo" onclick="goProfiles()">NETFLIX</div>
+    <div class="links">
+      <span>Home</span><span>Our Story</span><span>My List</span><span>New &amp; Hot</span>
     </div>
+    <div class="spacer"></div>
+    <button class="edit-toggle" id="editToggle" onclick="toggleEdit()">✎ Edit</button>
+    <button class="icon-btn" onclick="openSettings()" title="Settings">⚙</button>
+    <div class="who" id="navWho"></div>
   </div>
+  <div id="heroMount"></div>
+  <div class="rows" id="rowsMount"></div>
+</div>
 
-  <div class="floating-hearts" id="floatingHearts" aria-hidden="true"></div>
+<div id="overlayMount"></div>
+<div id="toast" class="toast"></div>
 
-  <main class="page">
-    <div class="shell">
-      <section class="screen active" id="welcomeScreen">
-        <div class="welcome-layout">
-          <div class="card hero">
-            <div class="eyebrow">A little game made with love</div>
-            <h1>Happy 5 Months ❤️</h1>
-            <p class="subtitle">Five months of smiles, soft moments, and a hundred tiny memories I never want to stop collecting with you.</p>
-            <div class="btn-row">
-              <button class="btn-primary" id="startBtn">Start Game</button>
-            </div>
-          </div>
+<script>
+/* ============================================================
+   OURFLIX — an editable, Netflix-style memory site for two.
 
-          <div class="card rules-card">
-            <p class="section-title">Rules</p>
-            <p class="rules-text">
-              1. There are total 10 questions.<br />
-              2. There's only one correct answer for each.<br />
-              3. The 50/50 lifeline can be used just once - so use it wisely.<br />
-              4. The higher your score, the better your reward.
-            </p>
-          </div>
+   HOW PUBLISHING WORKS:
+   All edits (photos, videos, text) are saved in this browser
+   (localStorage + IndexedDB) so the person editing can work
+   freely offline. To make those edits visible to someone else
+   opening the site link, use Settings → "Export backup", send
+   that file to Claude, and ask Claude to publish it — Claude
+   will bake it into SEED_CONFIG/SEED_MEDIA below and redeploy,
+   so any fresh visitor (like your partner) sees the update.
+   ============================================================ */
 
-          <div class="welcome-photo-grid">
-            <div class="welcome-photo-slot">
-              <img class="welcome-photo-img" src="./welcome-photo-1.jpg" alt="A sweet memory together" />
-            </div>
-            <div class="welcome-photo-slot">
-              <img class="welcome-photo-img" src="./welcome-photo-2.jpg" alt="A sweet memory together" />
-            </div>
-            <div class="welcome-photo-slot">
-              <img class="welcome-photo-img" src="./welcome-photo-3.jpg" alt="A sweet memory together" />
-            </div>
-            <div class="welcome-photo-slot">
-              <img class="welcome-photo-img" src="./welcome-photo-4.jpg" alt="A sweet memory together" />
-            </div>
-          </div>
+/* ---------- Placeholder gradients (used before you add media) ---------- */
+const GRADS = [
+  "linear-gradient(135deg,#7b2ff7,#f107a3)",
+  "linear-gradient(135deg,#f7971e,#ffd200)",
+  "linear-gradient(135deg,#11998e,#38ef7d)",
+  "linear-gradient(135deg,#ee0979,#ff6a00)",
+  "linear-gradient(135deg,#2193b0,#6dd5ed)",
+  "linear-gradient(135deg,#c31432,#240b36)",
+  "linear-gradient(135deg,#654ea3,#eaafc8)",
+  "linear-gradient(135deg,#f12711,#f5af19)"
+];
+const gradFor = i => GRADS[i % GRADS.length];
+
+/* ---------- Default content (fully editable in the app) ---------- */
+function uid(){ return 'x'+Math.random().toString(36).slice(2,9); }
+
+function placeholderItem(title, desc, g){
+  return { id:uid(), title, year:"", match:98, tags:[], desc, longDesc:desc, mediaId:null, mediaType:null, grad:g };
+}
+
+const DEFAULT_CONFIG = {
+  logoText:"NETFLIX",
+  tabTitle:"Netflix",
+  introEnabled:true,
+  soundEnabled:true,
+  profiles:[
+    {
+      id:"p1", name:"For You", color:"#E50914", avatarMediaId:null,
+      hero:{ badge:"OUR STORY", title:"The Story of Us",
+             desc:"Every moment, every trip, every small ordinary day that turned out to matter. Press play and let's relive it.",
+             mediaId:null, mediaType:null, bgColor:"#4a1616" },
+      rows:[
+        { id:uid(), title:"Continue Watching for You", items:[
+          placeholderItem("The Day We Met","Where it all began. Replace this with your real first-memory photo or a video.",0),
+          placeholderItem("First Date","Add the photo from your first date here.",3),
+          placeholderItem("Late Night Talks","Those 2am conversations that made everything click.",6),
+        ]},
+        { id:uid(), title:"Trending in Our World", items:[
+          placeholderItem("The Trip We'll Never Forget",": Add a favourite travel memory.",4),
+          placeholderItem("That Concert","The night we sang until we lost our voices.",1),
+          placeholderItem("Home Cooked","When we tried to cook and nearly burned the kitchen.",2),
+        ]},
+      ]
+    },
+    {
+      id:"p2", name:"Just Us", color:"#4b8ef0", avatarMediaId:null,
+      hero:{ badge:"BEHIND THE SCENES", title:"The Little Things",
+             desc:"The unglamorous, in-between, real stuff. The silly faces, the inside jokes, the ordinary days. This is my favourite show.",
+             mediaId:null, mediaType:null, bgColor:"#16324a" },
+      rows:[
+        { id:uid(), title:"Because You're My Favourite Person", items:[
+          placeholderItem("Silly Faces","A collection of the faces only I get to see.",7),
+          placeholderItem("Inside Jokes","The ones nobody else would understand.",5),
+          placeholderItem("Lazy Sundays","Doing nothing, together. The best episodes.",2),
+        ]},
+        { id:uid(), title:"Coming Soon", items:[
+          placeholderItem("All The Places We'll Go","Add a photo of a place you dream of visiting together.",4),
+          placeholderItem("Our Someday","Leave a little note about the future here.",0),
+        ]},
+      ]
+    }
+  ]
+};
+
+/* ============================================================
+   PUBLISHED SEED — this is what Claude edits when you ask it to
+   publish an exported backup. A fresh visitor (no local edits
+   yet, e.g. your partner's browser) always boots from this.
+   SEED_VERSION is bumped by Claude on every publish so browsers
+   that already have older seeded data pick up the new one.
+   ============================================================ */
+const SEED_VERSION = 0; // bumped by Claude each time a new export is published
+const SEED_CONFIG = null;   // replaced with your exported `config` object on publish
+const SEED_MEDIA  = null;   // replaced with your exported `media` object (base64) on publish
+
+/* ============================================================
+   Storage: config in localStorage, media blobs in IndexedDB
+   ============================================================ */
+const LS_KEY = "ourflix_config_v1";
+const SEED_KEY = "ourflix_seed_version";
+
+function loadConfig(){
+  try{ const raw = localStorage.getItem(LS_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return structuredClone(DEFAULT_CONFIG);
+}
+function saveConfig(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(config)); }catch(e){ toast("Couldn't save (storage full?)"); } }
+
+/* IndexedDB for media */
+let _db=null;
+function db(){
+  return new Promise((res,rej)=>{
+    if(_db) return res(_db);
+    const r = indexedDB.open("ourflix_media",1);
+    r.onupgradeneeded = e => { e.target.result.createObjectStore("media"); };
+    r.onsuccess = e => { _db=e.target.result; res(_db); };
+    r.onerror = e => rej(e);
+  });
+}
+async function putMedia(id, blob, type){
+  const d=await db();
+  return new Promise((res,rej)=>{ const tx=d.transaction("media","readwrite"); tx.objectStore("media").put({blob,type},id); tx.oncomplete=()=>res(); tx.onerror=rej; });
+}
+async function getMedia(id){
+  const d=await db();
+  return new Promise((res)=>{ const tx=d.transaction("media","readonly"); const rq=tx.objectStore("media").get(id); rq.onsuccess=()=>res(rq.result||null); rq.onerror=()=>res(null); });
+}
+async function delMedia(id){
+  if(!id) return; const d=await db();
+  return new Promise((res)=>{ const tx=d.transaction("media","readwrite"); tx.objectStore("media").delete(id); tx.oncomplete=()=>res(); });
+}
+const urlCache={};
+async function mediaUrl(id){
+  if(!id) return null;
+  if(urlCache[id]) return urlCache[id];
+  const m=await getMedia(id); if(!m) return null;
+  const u=URL.createObjectURL(m.blob); urlCache[id]=u; return u;
+}
+
+/* Seed IndexedDB + config from a published SEED_CONFIG/SEED_MEDIA bundle,
+   but only once per SEED_VERSION and only if this browser has no local
+   edits of its own yet (so we never clobber someone's in-progress edits). */
+async function maybeSeed(){
+  if(!SEED_CONFIG) return; // nothing published yet, just the template
+  const seenVersion = parseInt(localStorage.getItem(SEED_KEY)||"-1");
+  if(seenVersion >= SEED_VERSION) return; // this browser is already up to date
+  // fresh browser, or a newer publish is available: load the seed
+  localStorage.setItem(LS_KEY, JSON.stringify(SEED_CONFIG));
+  localStorage.setItem(SEED_KEY, String(SEED_VERSION));
+  if(SEED_MEDIA){
+    for(const id in SEED_MEDIA){
+      const m = SEED_MEDIA[id];
+      const blob = base64ToBlob(m.data, m.mime||"application/octet-stream");
+      await putMedia(id, blob, m.type);
+    }
+  }
+}
+
+/* Fill any element carrying data-mid / data-mid-bg with its media */
+async function hydrate(scope){
+  scope=scope||document;
+  const nodes=scope.querySelectorAll("[data-mid]");
+  for(const n of nodes){
+    const id=n.getAttribute("data-mid"); const type=n.getAttribute("data-mtype");
+    const u=await mediaUrl(id); if(!u) continue;
+    if(type==="video"){
+      const v=document.createElement("video");
+      v.src=u; v.muted=true; v.loop=true; v.playsInline=true; v.autoplay=true;
+      v.className=n.className; v.setAttribute("data-role",n.getAttribute("data-role")||"");
+      if(n.dataset.contain==="1") v.style.objectFit="contain";
+      n.replaceWith(v); v.play().catch(()=>{});
+    } else {
+      n.style.backgroundImage=`url(${u})`;
+      const g=n.querySelector(".grad"); if(g) g.style.display="none";
+    }
+  }
+}
+
+/* ============================================================
+   Boot
+   ============================================================ */
+let config;
+
+(async function boot(){
+  await maybeSeed();
+  config = loadConfig();
+  document.title = config.tabTitle || "Netflix";
+  applyLogoText();
+
+  if(config.introEnabled){
+    introTimer=setTimeout(()=>skipIntro(), 3400);
+    if(config.soundEnabled){ setTimeout(playThud, 350); }
+  } else { skipIntro(true); }
+})();
+
+function applyLogoText(){
+  document.querySelectorAll(".logo").forEach(l=>{ if(l.id!=="introLogo") l.textContent=config.logoText; });
+  document.getElementById("introLogo").textContent=config.logoText;
+}
+
+/* Intro */
+let introTimer=null;
+
+function skipIntro(instant){
+  clearTimeout(introTimer);
+  const i=document.getElementById("intro");
+  if(instant){ i.classList.add("hidden"); } else { i.style.transition="opacity .5s"; i.style.opacity="0"; setTimeout(()=>i.classList.add("hidden"),500); }
+  showProfiles();
+}
+
+/* Synthesized cinematic hit (not the Netflix sound) */
+function playThud(){
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const now=ac.currentTime;
+    [110,146].forEach((f,idx)=>{
+      const o=ac.createOscillator(), g=ac.createGain();
+      o.type="sine"; o.frequency.setValueAtTime(f,now+idx*0.12);
+      g.gain.setValueAtTime(0.0001,now+idx*0.12);
+      g.gain.exponentialRampToValueAtTime(0.5,now+idx*0.12+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,now+idx*0.12+0.6);
+      o.connect(g).connect(ac.destination); o.start(now+idx*0.12); o.stop(now+idx*0.12+0.7);
+    });
+  }catch(e){}
+}
+
+/* ============================================================
+   Profile picker
+   ============================================================ */
+let manageMode=false;
+function toggleManage(){ manageMode=!manageMode; document.getElementById("manageBtn").textContent=manageMode?"Done":"Manage Profiles"; showProfiles(); }
+
+async function showProfiles(){
+  document.getElementById("browse").style.display="none";
+  const p=document.getElementById("profiles"); p.classList.remove("hidden");
+  const row=document.getElementById("profileRow"); row.innerHTML="";
+  config.profiles.forEach((prof,idx)=>{
+    const initial=(prof.name||"?").trim().charAt(0).toUpperCase();
+    const d=document.createElement("div"); d.className="profile";
+    d.innerHTML=`
+      <div class="avatar" data-mid="${prof.avatarMediaId||''}" data-mtype="image"
+           style="background:${prof.avatarMediaId?'#000':gradFor(idx)}">${prof.avatarMediaId?'':initial}</div>
+      <div class="pname">${escapeHtml(prof.name)}</div>
+      ${manageMode?`<div class="edit-pencil">✎</div>`:''}`;
+    if(manageMode){ d.onclick=()=>editProfile(prof); }
+    else { d.onclick=()=>enterProfile(prof.id); }
+    row.appendChild(d);
+  });
+  hydrate(row);
+}
+
+function goProfiles(){ document.body.classList.remove("editing"); editMode=false; showProfiles(); }
+
+/* ============================================================
+   Browse view
+   ============================================================ */
+let currentProfileId=null;
+let editMode=false;
+
+function enterProfile(pid){
+  currentProfileId=pid;
+  document.getElementById("profiles").classList.add("hidden");
+  document.getElementById("browse").style.display="block";
+  window.scrollTo(0,0);
+  renderBrowse();
+  maybeShowHint();
+}
+
+function curProfile(){ return config.profiles.find(p=>p.id===currentProfileId); }
+
+function renderBrowse(){
+  const prof=curProfile(); if(!prof) return;
+  // nav "who"
+  const idx=config.profiles.indexOf(prof);
+  const initial=(prof.name||"?").charAt(0).toUpperCase();
+  const who=document.getElementById("navWho");
+  who.innerHTML=`<div class="mini" data-mid="${prof.avatarMediaId||''}" data-mtype="image" style="background:${prof.avatarMediaId?'#000':gradFor(idx)}">${prof.avatarMediaId?'':initial}</div>`;
+  renderHero(prof);
+  renderRows(prof);
+  hydrate(document.getElementById("browse"));
+}
+
+function renderHero(prof){
+  const h=prof.hero;
+  const mount=document.getElementById("heroMount");
+  const bgStyle = h.mediaId ? `background:${h.bgColor}` : `background:${h.bgColor}`;
+  mount.innerHTML=`
+    <div class="hero">
+      <div class="bg ${h.mediaId&&h.mediaType!=='video'?'kenburns':''}" data-mid="${h.mediaId||''}" data-mtype="${h.mediaType||'image'}" style="${bgStyle}">
+        <div class="grad" style="position:absolute;inset:0;background:linear-gradient(135deg,${h.bgColor},#000)"></div>
+      </div>
+      <div class="fade"></div>
+      ${editMode?`<button class="edit-hero" onclick="editHero()">✎ Edit banner</button>`:''}
+      <div class="content">
+        <div class="badge"><b>${escapeHtml(config.logoText)}</b> ${escapeHtml(h.badge||'')}</div>
+        <h2>${escapeHtml(h.title||'')}</h2>
+        <p>${escapeHtml(h.desc||'')}</p>
+        <div class="actions">
+          <button class="btn-play" onclick="playHero()">▶ Play</button>
+          <button class="btn-info" onclick="editMode?editHero():toast('Pick a memory below to see more ♥')">ⓘ More Info</button>
         </div>
-      </section>
+      </div>
+    </div>`;
+}
 
-      <section class="screen" id="quizScreen">
-        <div class="card quiz-card">
-          <div class="quiz-header">
-            <div class="progress-chip" id="progressText">Question 1/10</div>
-            <div class="score-chip" id="liveScore">Score: 0</div>
-            <div class="score-chip" id="lifelineStatus">50/50 Lifeline Available</div>
-          </div>
+function renderRows(prof){
+  const mount=document.getElementById("rowsMount"); mount.innerHTML="";
+  prof.rows.forEach((r,ri)=>{
+    const row=document.createElement("div"); row.className="row";
+    let cards="";
+    r.items.forEach((it,ii)=>{
+      cards+=cardHtml(prof,r,it,ii);
+    });
+    if(editMode) cards+=`<div class="card add" onclick="addItem('${r.id}')"><div class="plus">＋</div></div>`;
+    row.innerHTML=`
+      <div class="rhead">
+        <h3 ${editMode?`style="cursor:text" onclick="renameRow('${r.id}')" title="Click to rename"`:''}>${escapeHtml(r.title)}</h3>
+        ${editMode?`<div class="ractions">
+          <button onclick="moveRow('${r.id}',-1)" title="Move up">▲</button>
+          <button onclick="moveRow('${r.id}',1)" title="Move down">▼</button>
+          <button onclick="deleteRow('${r.id}')" title="Delete row">🗑 Row</button>
+        </div>`:''}
+      </div>
+      <div class="track-wrap">
+        <button class="arrow left" onclick="scrollTrack(this,-1)">‹</button>
+        <div class="track">${cards}</div>
+        <button class="arrow right" onclick="scrollTrack(this,1)">›</button>
+      </div>`;
+    mount.appendChild(row);
+  });
+  if(editMode){
+    const ar=document.createElement("div"); ar.className="row add-row";
+    ar.innerHTML=`<button onclick="addRow()">＋  Add a new category / row</button>`;
+    mount.appendChild(ar);
+  }
+}
 
-          <div class="question-box">
-            <div class="question-label">For us, for real</div>
-            <h2 class="question-text" id="questionText"></h2>
-            <div class="options" id="optionsContainer"></div>
-          </div>
+function cardHtml(prof,r,it,ii){
+  const hasMedia=!!it.mediaId;
+  const mediaEl = hasMedia
+    ? `<div class="media" data-mid="${it.mediaId}" data-mtype="${it.mediaType}" style="background:#000"></div>`
+    : `<div class="media grad" style="background:${gradFor(it.grad||ii)}"></div>`;
+  return `<div class="card" onclick="openDetail('${r.id}','${it.id}')">
+      ${mediaEl}
+      ${it.mediaType==='video'?`<div class="type-dot">▶ VIDEO</div>`:''}
+      <div class="label">${escapeHtml(it.title)}</div>
+      ${editMode?`<div class="cedit" onclick="event.stopPropagation();editItem('${r.id}','${it.id}')">✎</div>`:''}
+    </div>`;
+}
 
-          <div class="quiz-note" id="quizNote">Pick the answer that feels like our memory.</div>
+function scrollTrack(btn,dir){
+  const track=btn.parentElement.querySelector(".track");
+  track.scrollBy({left:dir*track.clientWidth*0.85, behavior:"smooth"});
+}
 
-          <div class="quiz-actions">
-            <button class="btn-secondary" id="lifelineBtn">Use 50/50</button>
-            <button class="btn-primary" id="nextBtn">Next</button>
-          </div>
+/* nav solidify on scroll */
+window.addEventListener("scroll",()=>{
+  const n=document.getElementById("nav");
+  if(window.scrollY>60) n.classList.add("solid"); else n.classList.remove("solid");
+});
+
+/* ============================================================
+   Detail modal + player
+   ============================================================ */
+function findItem(rid,iid){ const p=curProfile(); const r=p.rows.find(x=>x.id===rid); return {p,r,it:r.items.find(x=>x.id===iid)}; }
+
+function openDetail(rid,iid){
+  if(editMode){ editItem(rid,iid); return; }
+  const {it}=findItem(rid,iid);
+  const hasMedia=!!it.mediaId;
+  const topMedia = hasMedia
+    ? `<div class="media" data-mid="${it.mediaId}" data-mtype="${it.mediaType}" data-contain="1" style="background:#000"></div>`
+    : `<div class="media grad" style="background:${gradFor(it.grad||0)}"></div>`;
+  const tags=(it.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("");
+  const html=`
+    <div class="modal-back" onclick="if(event.target===this)closeOverlay()">
+      <div class="modal">
+        <div class="top">
+          ${topMedia}
+          <div class="vfade"></div>
+          <button class="close" onclick="closeOverlay()">✕</button>
+          <div class="mtitle">${escapeHtml(it.title)}</div>
         </div>
-      </section>
-
-      <section class="screen" id="resultScreen">
-        <div class="result-layout">
-          <div class="card result-card hero">
-            <div class="eyebrow">You reached the end</div>
-            <h2>Our Little Love Quiz</h2>
-            <div class="score-display" id="finalScore">You got 0/10 💕</div>
-            <p class="result-message" id="resultMessage">
-              No matter the score, every memory with you already feels like my favorite answer.
-            </p>
+        <div class="body">
+          <button class="mplay" onclick="playItem('${rid}','${iid}')">▶ Play</button>
+          <div class="meta">
+            ${it.match?`<span class="match">${it.match}% Match</span>`:''}
+            ${it.year?`<span class="yr">${escapeHtml(it.year)}</span>`:''}
+            ${tags}
           </div>
-
-          <div class="card reward-box">
-            <p class="section-title">Your Reward</p>
-            <p class="reward-copy" id="rewardText">
-              Reward placeholder. You can edit this logic later to match each score with your own special surprise.
-            </p>
-          </div>
-
-          <div class="card image-frame">
-            <img
-              class="memory-photo"
-              src="./romantic-photo.png"
-              alt="A collage of sweet moments together"
-            />
-            <div class="photo-caption">Us forever</div>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn-primary" id="playAgainBtn">Play Again</button>
-          </div>
-
-          <p class="signature">Made for a story that keeps getting softer and sweeter.</p>
+          <div class="desc">${escapeHtml(it.longDesc||it.desc||'')}</div>
         </div>
-      </section>
+      </div>
+    </div>`;
+  mountOverlay(html); hydrate(document.getElementById("overlayMount"));
+}
+
+function playHero(){
+  const h=curProfile().hero;
+  if(!h.mediaId){ toast("Add a banner photo or video in Edit mode ✎"); return; }
+  openPlayer(h.mediaId,h.mediaType,h.title);
+}
+function playItem(rid,iid){ const {it}=findItem(rid,iid); if(!it.mediaId){ toast("Add a photo or video to this memory first ✎"); return; } openPlayer(it.mediaId,it.mediaType,it.title); }
+
+async function openPlayer(mid,type,caption){
+  const u=await mediaUrl(mid);
+  let inner;
+  if(type==="video"){ inner=`<video src="${u}" controls autoplay playsinline></video>`; }
+  else { inner=`<img class="ki" src="${u}" /><div class="caption">${escapeHtml(caption||'')}</div>`; }
+  mountOverlay(`<div class="player-back"><button class="pclose" onclick="closeOverlay()">✕</button>${inner}</div>`);
+}
+
+/* ============================================================
+   Overlays
+   ============================================================ */
+function mountOverlay(html){ document.getElementById("overlayMount").innerHTML=html; document.body.style.overflow="hidden"; }
+function closeOverlay(){ document.getElementById("overlayMount").innerHTML=""; document.body.style.overflow=""; }
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeOverlay(); });
+
+/* ============================================================
+   EDIT MODE
+   ============================================================ */
+function toggleEdit(){
+  editMode=!editMode;
+  document.body.classList.toggle("editing",editMode);
+  document.getElementById("editToggle").classList.toggle("on",editMode);
+  document.getElementById("editToggle").innerHTML=editMode?"✓ Done":"✎ Edit";
+  renderBrowse();
+  toast(editMode?"Edit mode on. Tap ✎ / ＋ to change anything.":"Saved. Looking good ♥");
+}
+
+/* ---- Media picker helper: builds a drop zone bound to a temp state ---- */
+function mediaDropHtml(state){
+  if(state.mediaId && state.previewUrl){
+    if(state.mediaType==="video"){
+      return `<div class="media-drop has"><video src="${state.previewUrl}" muted></video><button class="rm" onclick="clearDrop(this)">Remove</button></div>`;
+    }
+    return `<div class="media-drop has"><div class="preview" style="background-image:url(${state.previewUrl})"></div><button class="rm" onclick="clearDrop(this)">Remove</button></div>`;
+  }
+  return `<div class="media-drop" onclick="this.querySelector('input').click()">
+     <div>📷 / 🎬  Click to add a photo or video</div>
+     <input type="file" accept="image/*,video/*" style="display:none" onchange="onPickMedia(this)">
+   </div>`;
+}
+let _pendingMedia=null; // {blob,type,url,id}
+function onPickMedia(input){
+  const f=input.files[0]; if(!f) return;
+  const type=f.type.startsWith("video")?"video":"image";
+  const url=URL.createObjectURL(f);
+  _pendingMedia={ blob:f, type, url, id:uid() };
+  const drop=input.closest(".media-drop");
+  drop.classList.add("has"); drop.onclick=null;
+  drop.innerHTML = type==="video"
+    ? `<video src="${url}" muted></video><button class="rm" onclick="clearDrop(this)">Remove</button>`
+    : `<div class="preview" style="background-image:url(${url})"></div><button class="rm" onclick="clearDrop(this)">Remove</button>`;
+}
+function clearDrop(btn){
+  _pendingMedia={ cleared:true };
+  const drop=btn.closest(".media-drop");
+  drop.classList.remove("has");
+  drop.onclick=function(){ this.querySelector('input').click(); };
+  drop.innerHTML=`<div>📷 / 🎬  Click to add a photo or video</div>
+     <input type="file" accept="image/*,video/*" style="display:none" onchange="onPickMedia(this)">`;
+}
+
+function openForm(html){ document.getElementById("overlayMount").innerHTML=`<div class="form-back" onclick="if(event.target===this)closeOverlay()"><div class="form">${html}</div></div>`; document.body.style.overflow="hidden"; }
+
+/* ---- Edit / add a memory item ---- */
+function editItem(rid,iid){ _openItemForm(rid,iid); }
+function addItem(rid){ _openItemForm(rid,null); }
+
+function _openItemForm(rid,iid){
+  _pendingMedia=null;
+  const p=curProfile(); const r=p.rows.find(x=>x.id===rid);
+  const it = iid ? r.items.find(x=>x.id===iid) : { id:uid(), title:"", year:"", match:98, tags:[], desc:"", longDesc:"", mediaId:null, mediaType:null, grad:Math.floor(Math.random()*GRADS.length) };
+  const dropState={ mediaId:it.mediaId, mediaType:it.mediaType, previewUrl:null };
+  openForm(`
+    <h3>${iid?'Edit memory':'Add a memory'}</h3>
+    <div class="hint">This shows up as a "title" in your library.</div>
+    <label>Title</label>
+    <input type="text" id="f_title" value="${attr(it.title)}" placeholder="e.g. Our First Trip">
+    <label>Photo or video</label>
+    <div id="f_drop">${mediaDropHtml(dropState)}</div>
+    <div class="row2">
+      <div><label>Date / place label</label><input type="text" id="f_year" value="${attr(it.year)}" placeholder="2023 · Goa"></div>
+      <div><label>Match %</label><input type="number" id="f_match" value="${it.match||''}" min="0" max="100" placeholder="98"></div>
     </div>
-  </main>
+    <label>Short line (shown on the card)</label>
+    <input type="text" id="f_desc" value="${attr(it.desc)}" placeholder="One line about this memory">
+    <label>The full story (shown when opened)</label>
+    <textarea id="f_long" placeholder="Write as much as you want here ♥">${escapeHtml(it.longDesc||'')}</textarea>
+    <label>Tags (comma separated)</label>
+    <input type="text" id="f_tags" value="${attr((it.tags||[]).join(', '))}" placeholder="Romantic, Adventure, Sunsets">
+    <div class="actions">
+      <button class="save" onclick="saveItem('${rid}','${iid||''}','${it.id}')">Save</button>
+      <button class="cancel" onclick="closeOverlay()">Cancel</button>
+      ${iid?`<button class="del" onclick="deleteItem('${rid}','${iid}')">Delete</button>`:''}
+    </div>
+  `);
+  // load existing media preview
+  if(it.mediaId){ mediaUrl(it.mediaId).then(u=>{ if(!u) return; const st={mediaId:it.mediaId,mediaType:it.mediaType,previewUrl:u}; document.getElementById("f_drop").innerHTML=mediaDropHtml(st); }); }
+}
 
-  <audio id="backgroundMusic" src="./about-you.mp3" preload="auto"></audio>
-  <button class="music-toggle" id="musicToggle" type="button" aria-label="Mute music">Music On</button>
+async function saveItem(rid,iid,itemId){
+  const p=curProfile(); const r=p.rows.find(x=>x.id===rid);
+  let it = iid ? r.items.find(x=>x.id===iid) : null;
+  if(!it){ it={ id:itemId, tags:[], grad:Math.floor(Math.random()*GRADS.length) }; r.items.push(it); }
+  it.title=val("f_title")||"Untitled";
+  it.year=val("f_year");
+  it.match=parseInt(val("f_match"))||0;
+  it.desc=val("f_desc");
+  it.longDesc=val("f_long");
+  it.tags=val("f_tags").split(",").map(s=>s.trim()).filter(Boolean);
+  // media
+  if(_pendingMedia){
+    if(_pendingMedia.cleared){ await delMedia(it.mediaId); delete urlCache[it.mediaId]; it.mediaId=null; it.mediaType=null; }
+    else { await delMedia(it.mediaId); delete urlCache[it.mediaId]; await putMedia(_pendingMedia.id,_pendingMedia.blob,_pendingMedia.type); it.mediaId=_pendingMedia.id; it.mediaType=_pendingMedia.type; }
+  }
+  saveConfig(); closeOverlay(); renderBrowse(); toast("Saved ♥");
+}
 
-  <script>
-    const SITE_PASSWORD = "17/11/25";
-    const MUSIC_START_TIME = 181;
+async function deleteItem(rid,iid){
+  if(!confirm("Delete this memory?")) return;
+  const p=curProfile(); const r=p.rows.find(x=>x.id===rid);
+  const it=r.items.find(x=>x.id===iid);
+  await delMedia(it.mediaId);
+  r.items=r.items.filter(x=>x.id!==iid);
+  saveConfig(); closeOverlay(); renderBrowse();
+}
 
-    const quizData = [
-      {
-        question: "What was the first text I ever sent you?",
-        options: [
-          "Hey, it's Vivaan, Want to meet up at 6",
-          "Vivaan here, you free for coffee at 6?",
-          "Hi, got your number from Gireesha, you wanna grab coffee at 6?",
-          "Hey, Vivaan Jain here, you wanna grab coffee around 6?"
-        ],
-        answer: 3
-      },
-      {
-        question: "What was I wearing when we first met?",
-        options: [
-          "blue sweatshirt and black tracks",
-          "white t-shirt and grey joggers",
-          "blue t-shirt and shorts",
-          "blue sweatshirt and shorts"
-        ],
-        answer: 3
-      },
-      {
-        question: "Where did we first meet?",
-        options: [
-          "blue tokai",
-          "rh2",
-          "rh4",
-          "Chai24"
-        ],
-        answer: 3
-      },
-      {
-        question: "What was the first meal we ever had together?",
-        options: [
-          "Healthy nook",
-          "Dhaba",
-          "mess",
-          "blue tokai"
-        ],
-        answer: 3
-      },
-      {
-        question: "What was the first type of flowers I ever got you?",
-        options: [
-          "white lilies",
-          "blue roses",
-          "white roses",
-          "Carnations"
-        ],
-        answer: 3
-      },
-      {
-        question: "Where did we meet the morning after we made out?",
-        options: [
-          "inside blue tokai",
-          "outside fuel zone",
-          "rh2 commons",
-          "outside blue tokai"
-        ],
-        answer: 3
-      },
-      {
-        question: "What was the first thing we ever watched together?",
-        options: [
-          "how I met your mother",
-          "Brooklyn 99",
-          "Modern family",
-          "10 things I hate about you"
-        ],
-        answer: 3
-      },
-      {
-        question: "When did we first say I love you to each other?",
-        options: [
-          "20th December",
-          "21st December",
-          "19th December",
-          "22nd December"
-        ],
-        answer: 3
-      },
-      {
-        question: "Where did we eat on Valentines?",
-        options: [
-          "The Grammar Room",
-          "Big Chill",
-          "Trick question",
-          "Yum Yum Cha"
-        ],
-        answer: 2
-      },
-      {
-        question: "What is the most recent movie we finished?",
-        options: [
-          "Kal ho na ho",
-          "The princess Switch",
-          "She’s the man",
-          "Kabhi Alvida na Kehna"
-        ],
-        answer: 2
-      }
-    ];
+/* ---- Rows ---- */
+function renameRow(rid){
+  const p=curProfile(); const r=p.rows.find(x=>x.id===rid);
+  const n=prompt("Row title:",r.title); if(n!==null){ r.title=n; saveConfig(); renderBrowse(); }
+}
+function addRow(){
+  const p=curProfile();
+  p.rows.push({ id:uid(), title:"New Category", items:[] });
+  saveConfig(); renderBrowse();
+}
+function deleteRow(rid){
+  if(!confirm("Delete this whole row and its memories?")) return;
+  const p=curProfile(); const r=p.rows.find(x=>x.id===rid);
+  r.items.forEach(it=>delMedia(it.mediaId));
+  p.rows=p.rows.filter(x=>x.id!==rid);
+  saveConfig(); renderBrowse();
+}
+function moveRow(rid,dir){
+  const p=curProfile(); const i=p.rows.findIndex(x=>x.id===rid); const j=i+dir;
+  if(j<0||j>=p.rows.length) return;
+  [p.rows[i],p.rows[j]]=[p.rows[j],p.rows[i]]; saveConfig(); renderBrowse();
+}
 
-    const screens = {
-      welcome: document.getElementById("welcomeScreen"),
-      quiz: document.getElementById("quizScreen"),
-      result: document.getElementById("resultScreen")
-    };
+/* ---- Hero ---- */
+function editHero(){
+  _pendingMedia=null;
+  const h=curProfile().hero;
+  openForm(`
+    <h3>Edit the banner</h3>
+    <div class="hint">The big feature at the top of this profile.</div>
+    <label>Small badge text</label>
+    <input type="text" id="h_badge" value="${attr(h.badge)}" placeholder="OUR STORY">
+    <label>Big title</label>
+    <input type="text" id="h_title" value="${attr(h.title)}" placeholder="The Story of Us">
+    <label>Description</label>
+    <textarea id="h_desc">${escapeHtml(h.desc||'')}</textarea>
+    <label>Banner photo or video</label>
+    <div id="f_drop">${mediaDropHtml({mediaId:h.mediaId,mediaType:h.mediaType,previewUrl:null})}</div>
+    <label>Fallback colour (used if no photo)</label>
+    <input type="text" id="h_color" value="${attr(h.bgColor)}" placeholder="#4a1616">
+    <div class="actions">
+      <button class="save" onclick="saveHero()">Save</button>
+      <button class="cancel" onclick="closeOverlay()">Cancel</button>
+    </div>
+  `);
+  if(h.mediaId){ mediaUrl(h.mediaId).then(u=>{ if(u) document.getElementById("f_drop").innerHTML=mediaDropHtml({mediaId:h.mediaId,mediaType:h.mediaType,previewUrl:u}); }); }
+}
+async function saveHero(){
+  const h=curProfile().hero;
+  h.badge=val("h_badge"); h.title=val("h_title"); h.desc=val("h_desc"); h.bgColor=val("h_color")||"#333";
+  if(_pendingMedia){
+    if(_pendingMedia.cleared){ await delMedia(h.mediaId); delete urlCache[h.mediaId]; h.mediaId=null; h.mediaType=null; }
+    else { await delMedia(h.mediaId); delete urlCache[h.mediaId]; await putMedia(_pendingMedia.id,_pendingMedia.blob,_pendingMedia.type); h.mediaId=_pendingMedia.id; h.mediaType=_pendingMedia.type; }
+  }
+  saveConfig(); closeOverlay(); renderBrowse(); toast("Banner updated ♥");
+}
 
-    const startBtn = document.getElementById("startBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const lifelineBtn = document.getElementById("lifelineBtn");
-    const playAgainBtn = document.getElementById("playAgainBtn");
-    const questionText = document.getElementById("questionText");
-    const optionsContainer = document.getElementById("optionsContainer");
-    const progressText = document.getElementById("progressText");
-    const liveScore = document.getElementById("liveScore");
-    const lifelineStatus = document.getElementById("lifelineStatus");
-    const quizNote = document.getElementById("quizNote");
-    const finalScore = document.getElementById("finalScore");
-    const resultMessage = document.getElementById("resultMessage");
-    const rewardText = document.getElementById("rewardText");
-    const heartsContainer = document.getElementById("floatingHearts");
-    const backgroundMusic = document.getElementById("backgroundMusic");
-    const musicToggle = document.getElementById("musicToggle");
-    const passwordGate = document.getElementById("passwordGate");
-    const passwordForm = document.getElementById("passwordForm");
-    const passwordInput = document.getElementById("passwordInput");
-    const passwordError = document.getElementById("passwordError");
+/* ---- Profiles ---- */
+const PCOLORS=["#E50914","#4b8ef0","#46d369","#f5b342","#b34bf5","#f54b8e"];
+function editProfile(prof){
+  _pendingMedia=null;
+  openForm(`
+    <h3>Edit profile</h3>
+    <label>Name</label>
+    <input type="text" id="p_name" value="${attr(prof.name)}" placeholder="Her name / For You">
+    <label>Profile picture</label>
+    <div id="f_drop">${mediaDropHtml({mediaId:prof.avatarMediaId,mediaType:'image',previewUrl:null})}</div>
+    <label>Accent colour</label>
+    <div class="swatches">${PCOLORS.map(c=>`<button class="swatch ${c===prof.color?'sel':''}" style="background:${c}" onclick="pickSwatch(this,'${c}')"></button>`).join('')}</div>
+    <div class="actions">
+      <button class="save" onclick="saveProfile('${prof.id}')">Save</button>
+      <button class="cancel" onclick="closeOverlay()">Cancel</button>
+    </div>
+  `);
+  _swatch=prof.color;
+  if(prof.avatarMediaId){ mediaUrl(prof.avatarMediaId).then(u=>{ if(u) document.getElementById("f_drop").innerHTML=mediaDropHtml({mediaId:prof.avatarMediaId,mediaType:'image',previewUrl:u}); }); }
+}
+let _swatch=null;
+function pickSwatch(btn,c){ _swatch=c; document.querySelectorAll(".swatch").forEach(s=>s.classList.remove("sel")); btn.classList.add("sel"); }
+async function saveProfile(pid){
+  const prof=config.profiles.find(p=>p.id===pid);
+  prof.name=val("p_name")||"Profile";
+  prof.color=_swatch||prof.color;
+  if(_pendingMedia){
+    if(_pendingMedia.cleared){ await delMedia(prof.avatarMediaId); delete urlCache[prof.avatarMediaId]; prof.avatarMediaId=null; }
+    else { await delMedia(prof.avatarMediaId); delete urlCache[prof.avatarMediaId]; await putMedia(_pendingMedia.id,_pendingMedia.blob,_pendingMedia.type); prof.avatarMediaId=_pendingMedia.id; }
+  }
+  saveConfig(); closeOverlay(); showProfiles(); toast("Profile saved ♥");
+}
 
-    let currentQuestion = 0;
-    let selectedAnswers = [];
-    let selectedOption = null;
-    let answerSubmitted = false;
-    let lifelineUsed = false;
-    let hiddenOptions = [];
-    let musicStarted = false;
-    let gateCleared = false;
+/* ============================================================
+   Settings (logo, tab title, intro, export/import, reset)
+   ============================================================ */
+function openSettings(){
+  openForm(`
+    <h3>Settings</h3>
+    <div class="hint">Small touches + your backup.</div>
+    <label>Logo text (top-left wordmark)</label>
+    <input type="text" id="s_logo" value="${attr(config.logoText)}" placeholder="NETFLIX / OURFLIX / your names">
+    <label>Browser tab title</label>
+    <input type="text" id="s_tab" value="${attr(config.tabTitle)}" placeholder="Netflix">
+    <div class="toggle"><input type="checkbox" id="s_intro" ${config.introEnabled?'checked':''}><span>Play the intro animation on open</span></div>
+    <div class="toggle"><input type="checkbox" id="s_sound" ${config.soundEnabled?'checked':''}><span>Play a sound on the intro</span></div>
+    <label style="margin-top:18px">Backup &amp; move</label>
+    <div class="settings-links">
+      <button onclick="exportAll()">⬇ Export backup (with photos)</button>
+      <button onclick="document.getElementById('importFile').click()">⬆ Import backup</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importAll(this)">
+    </div>
+    <div class="settings-links">
+      <button onclick="resetAll()" style="border-color:#703;color:#f77">↺ Reset everything</button>
+    </div>
+    <div class="publish-note">📤 <b>To publish your edits so they show up for anyone else opening this link:</b> click "Export backup" above, then send the downloaded file to Claude in chat and ask it to publish the update.</div>
+    <div class="actions">
+      <button class="save" onclick="saveSettings()">Save</button>
+      <button class="cancel" onclick="closeOverlay()">Cancel</button>
+    </div>
+  `);
+}
+function saveSettings(){
+  config.logoText=val("s_logo")||"NETFLIX";
+  config.tabTitle=val("s_tab")||"Netflix";
+  config.introEnabled=document.getElementById("s_intro").checked;
+  config.soundEnabled=document.getElementById("s_sound").checked;
+  document.title=config.tabTitle; applyLogoText(); saveConfig(); closeOverlay(); renderBrowse(); toast("Settings saved");
+}
 
-    function seekMusicToStart() {
-      try {
-        backgroundMusic.currentTime = MUSIC_START_TIME;
-      } catch (error) {
-        backgroundMusic.addEventListener("loadedmetadata", seekMusicToStart, { once: true });
-      }
+/* Export: bundle config + all media as base64 into one JSON file */
+async function exportAll(){
+  toast("Preparing backup...");
+  const bundle={ config:structuredClone(config), media:{} };
+  const ids=collectMediaIds();
+  for(const id of ids){
+    const m=await getMedia(id); if(!m) continue;
+    bundle.media[id]={ type:m.type, data:await blobToBase64(m.blob), mime:m.blob.type };
+  }
+  const blob=new Blob([JSON.stringify(bundle)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download="ourflix-backup.json"; a.click();
+  toast("Backup downloaded ♥");
+}
+async function importAll(input){
+  const f=input.files[0]; if(!f) return;
+  try{
+    const bundle=JSON.parse(await f.text());
+    for(const id in (bundle.media||{})){
+      const m=bundle.media[id];
+      const blob=base64ToBlob(m.data,m.mime||"application/octet-stream");
+      await putMedia(id,blob,m.type);
     }
+    config=bundle.config; saveConfig();
+    Object.keys(urlCache).forEach(k=>delete urlCache[k]);
+    document.title=config.tabTitle; applyLogoText();
+    closeOverlay(); showProfiles(); toast("Backup restored ♥");
+  }catch(e){ toast("Couldn't read that file"); }
+}
+function collectMediaIds(){
+  const ids=new Set();
+  config.profiles.forEach(p=>{
+    if(p.avatarMediaId) ids.add(p.avatarMediaId);
+    if(p.hero.mediaId) ids.add(p.hero.mediaId);
+    p.rows.forEach(r=>r.items.forEach(it=>{ if(it.mediaId) ids.add(it.mediaId); }));
+  });
+  return [...ids];
+}
+function resetAll(){
+  if(!confirm("This wipes everything and restores the template. Sure?")) return;
+  config=structuredClone(DEFAULT_CONFIG); saveConfig();
+  indexedDB.deleteDatabase("ourflix_media"); _db=null;
+  Object.keys(urlCache).forEach(k=>delete urlCache[k]);
+  document.title=config.tabTitle; applyLogoText(); closeOverlay(); showProfiles();
+}
 
-    function updateMusicToggle() {
-      if (backgroundMusic.muted) {
-        musicToggle.textContent = "Music Off";
-        musicToggle.setAttribute("aria-label", "Unmute music");
-        return;
-      }
+/* ============================================================
+   Helpers
+   ============================================================ */
+function val(id){ const e=document.getElementById(id); return e?e.value.trim():""; }
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function attr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2200); }
+function blobToBase64(blob){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(",")[1]); r.readAsDataURL(blob); }); }
+function base64ToBlob(b64,mime){ const bin=atob(b64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:mime}); }
 
-      musicToggle.textContent = backgroundMusic.paused ? "Tap for music" : "Music On";
-      musicToggle.setAttribute("aria-label", "Mute music");
-    }
-
-    async function startMusic() {
-      if (!gateCleared) {
-        return;
-      }
-
-      if (!musicStarted) {
-        seekMusicToStart();
-      }
-
-      try {
-        await backgroundMusic.play();
-        musicStarted = true;
-      } catch (error) {
-        musicStarted = false;
-      }
-
-      updateMusicToggle();
-    }
-
-    function startMusicAfterFirstInteraction() {
-      if (!gateCleared) {
-        return;
-      }
-
-      startMusic();
-      window.removeEventListener("click", startMusicAfterFirstInteraction);
-      window.removeEventListener("touchstart", startMusicAfterFirstInteraction);
-      window.removeEventListener("keydown", startMusicAfterFirstInteraction);
-    }
-
-    function unlockSite() {
-      gateCleared = true;
-      document.body.classList.remove("gate-locked");
-      passwordGate.classList.add("unlocked");
-      passwordInput.blur();
-      startMusic();
-
-      setTimeout(() => {
-        passwordGate.setAttribute("hidden", "");
-      }, 560);
-    }
-
-    function setActiveScreen(screenName) {
-      Object.values(screens).forEach((screen) => screen.classList.remove("active"));
-      screens[screenName].classList.add("active");
-    }
-
-    function createHearts() {
-      const totalHearts = 18;
-      heartsContainer.innerHTML = "";
-
-      for (let i = 0; i < totalHearts; i += 1) {
-        const heart = document.createElement("span");
-        heart.className = "heart";
-        heart.style.left = `${Math.random() * 100}%`;
-        heart.style.animationDuration = `${8 + Math.random() * 7}s`;
-        heart.style.animationDelay = `${Math.random() * 8}s`;
-        heart.style.opacity = `${0.25 + Math.random() * 0.35}`;
-        const size = 12 + Math.random() * 16;
-        heart.style.width = `${size}px`;
-        heart.style.height = `${size}px`;
-        heart.style.background = Math.random() > 0.5 ? "rgba(255,255,255,0.55)" : "rgba(255,221,233,0.65)";
-        heartsContainer.appendChild(heart);
-      }
-    }
-
-    function renderQuestion() {
-      const item = quizData[currentQuestion];
-      const optionLetters = ["A", "B", "C", "D"];
-
-      progressText.textContent = `Question ${currentQuestion + 1}/${quizData.length}`;
-      liveScore.textContent = `Score: ${calculateScore()}`;
-      lifelineStatus.textContent = lifelineUsed ? "50/50 Lifeline Used" : "50/50 Lifeline Available";
-      questionText.textContent = item.question;
-      optionsContainer.innerHTML = "";
-      quizNote.textContent = "Pick the answer that feels like our memory.";
-      selectedOption = null;
-
-      item.options.forEach((option, index) => {
-        const button = document.createElement("button");
-        button.className = "option";
-        button.type = "button";
-        button.dataset.index = index;
-        button.dataset.letter = optionLetters[index];
-        button.textContent = option;
-
-        if (selectedOption === index) {
-          button.classList.add("selected");
-        }
-
-        if (hiddenOptions.includes(index)) {
-          button.classList.add("hidden-by-lifeline");
-        }
-
-        button.addEventListener("click", () => {
-          if (answerSubmitted || hiddenOptions.includes(index)) {
-            return;
-          }
-
-          selectedOption = index;
-          document.querySelectorAll(".option").forEach((optionButton) => {
-            optionButton.classList.remove("selected");
-          });
-          button.classList.add("selected");
-          quizNote.textContent = "Choice selected. Tap Submit to lock it in.";
-        });
-
-        optionsContainer.appendChild(button);
-      });
-
-      nextBtn.textContent = "Submit";
-      lifelineBtn.disabled = lifelineUsed || answerSubmitted;
-    }
-
-    function useLifeline() {
-      if (lifelineUsed) {
-        return;
-      }
-
-      const correctAnswer = quizData[currentQuestion].answer;
-      const incorrectOptions = quizData[currentQuestion].options
-        .map((_, index) => index)
-        .filter((index) => index !== correctAnswer);
-
-      hiddenOptions = incorrectOptions
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 2);
-
-      lifelineUsed = true;
-      quizNote.textContent = "Two wrong answers faded away. Choose carefully.";
-      renderQuestion();
-    }
-
-    function revealAnswer() {
-      const correctAnswer = quizData[currentQuestion].answer;
-
-      document.querySelectorAll(".option").forEach((optionButton) => {
-        const optionIndex = Number(optionButton.dataset.index);
-        optionButton.disabled = true;
-
-        if (optionIndex === correctAnswer) {
-          optionButton.classList.add("correct");
-        }
-
-        if (optionIndex === selectedOption && optionIndex !== correctAnswer) {
-          optionButton.classList.add("incorrect");
-        }
-      });
-    }
-
-    function submitAnswer() {
-      if (selectedOption === null) {
-        quizNote.textContent = "Choose one option first, pretty please.";
-        return;
-      }
-
-      selectedAnswers[currentQuestion] = selectedOption;
-      answerSubmitted = true;
-      revealAnswer();
-      liveScore.textContent = `Score: ${calculateScore()}`;
-      lifelineBtn.disabled = true;
-      nextBtn.textContent = currentQuestion === quizData.length - 1 ? "See Result" : "Next Question";
-
-      const isCorrect = selectedOption === quizData[currentQuestion].answer;
-      quizNote.textContent = isCorrect
-        ? "Correct answer. Tap Next Question when you're ready."
-        : "Not this one. The green answer is the right memory.";
-    }
-
-    function calculateScore() {
-      return selectedAnswers.reduce((score, answer, index) => {
-        return score + (answer === quizData[index].answer ? 1 : 0);
-      }, 0);
-    }
-
-    function getRewardCopy(score) {
-      if (score === 10) {
-        return "Ice cream + Massage + Butler for the entire day (I'll do anything you want basically) + I love you more for 4 days + I'll show you my proper dance skills";
-      }
-      if (score === 9) {
-        return "Ice Cream + Massage + Butler for the entire day + I love you more for 4 days";
-      }
-      if (score === 8) {
-        return "Ice Cream + Massage + Butler for the entire day";
-      }
-      if (score === 7) {
-        return "Ice Cream + Massage";
-      }
-      if (score === 6) {
-        return "Ice Cream";
-      }
-      return "I don't think you love me😢";
-    }
-
-    function getRomanticMessage(score) {
-      if (score === 10) {
-        return "You remembered us perfectly, and honestly that feels exactly right for a love this soft and unforgettable.";
-      }
-      if (score >= 8) {
-        return "You know our story so beautifully. Every answer feels like another little reminder of how special this has been.";
-      }
-      if (score >= 5) {
-        return "Some details can blur, but the feeling never does. What matters most is still us, always.";
-      }
-      return "Even if the quiz was tricky, loving you still feels like the easiest thing in the world.";
-    }
-
-    function showResults() {
-      const score = calculateScore();
-      finalScore.textContent = `You got ${score}/${quizData.length} 💕`;
-      rewardText.textContent = getRewardCopy(score);
-      resultMessage.textContent = getRomanticMessage(score);
-      setActiveScreen("result");
-    }
-
-    function goToNextQuestion() {
-      if (!answerSubmitted) {
-        submitAnswer();
-        return;
-      }
-
-      if (currentQuestion === quizData.length - 1) {
-        showResults();
-        return;
-      }
-
-      currentQuestion += 1;
-      selectedOption = null;
-      answerSubmitted = false;
-      hiddenOptions = [];
-      renderQuestion();
-    }
-
-    function resetGame() {
-      currentQuestion = 0;
-      selectedAnswers = [];
-      selectedOption = null;
-      answerSubmitted = false;
-      lifelineUsed = false;
-      hiddenOptions = [];
-      renderQuestion();
-      setActiveScreen("welcome");
-    }
-
-    startBtn.addEventListener("click", () => {
-      currentQuestion = 0;
-      selectedAnswers = [];
-      selectedOption = null;
-      answerSubmitted = false;
-      hiddenOptions = [];
-      lifelineUsed = false;
-      renderQuestion();
-      setActiveScreen("quiz");
-    });
-
-    lifelineBtn.addEventListener("click", useLifeline);
-    nextBtn.addEventListener("click", goToNextQuestion);
-    playAgainBtn.addEventListener("click", resetGame);
-
-    backgroundMusic.addEventListener("loadedmetadata", () => {
-      seekMusicToStart();
-      if (gateCleared) {
-        startMusic();
-      }
-    });
-
-    backgroundMusic.addEventListener("ended", () => {
-      seekMusicToStart();
-      startMusic();
-    });
-
-    musicToggle.addEventListener("click", () => {
-      backgroundMusic.muted = !backgroundMusic.muted;
-
-      if (!backgroundMusic.muted) {
-        startMusic();
-        return;
-      }
-
-      updateMusicToggle();
-    });
-
-    window.addEventListener("click", startMusicAfterFirstInteraction);
-    window.addEventListener("touchstart", startMusicAfterFirstInteraction);
-    window.addEventListener("keydown", startMusicAfterFirstInteraction);
-
-    passwordForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      if (passwordInput.value.trim() === SITE_PASSWORD) {
-        passwordError.textContent = "";
-        unlockSite();
-        return;
-      }
-
-      passwordError.textContent = "Try again 🥺";
-      passwordInput.value = "";
-      passwordInput.focus();
-    });
-
-    createHearts();
-    passwordInput.focus();
-  </script>
+function maybeShowHint(){
+  if(localStorage.getItem("ourflix_hint_seen")) return;
+  const b=document.createElement("div"); b.className="hint-banner";
+  b.innerHTML=`<span>👋 This is your template. Tap <b>✎ Edit</b> (top right) to add your own photos, videos and words. Everything saves automatically in this browser.</span><button class="x" onclick="this.parentElement.remove();localStorage.setItem('ourflix_hint_seen','1')">Got it</button>`;
+  document.body.appendChild(b);
+}
+</script>
 </body>
 </html>
